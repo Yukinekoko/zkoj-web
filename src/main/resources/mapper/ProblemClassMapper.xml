@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="indi.snowmeow.zkojweb.mapper.ProblemClassMapper">
+
+    <!-- resultMap -->
+    <resultMap id="ProblemClassResultMap" type="Map">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="description" column="description"/>
+        <association property="count" column="id"
+                     select="indi.snowmeow.zkojweb.mapper.ProblemMapper.countProblemFromClassId"></association>
+    </resultMap>
+    <!-- 获取所有分类信息 -->
+    <select id="getClassesInfo" resultMap="ProblemClassResultMap">
+        select * from problem_class
+
+    </select>
+    <!-- 根据名字和描述获取分组信息-->
+    <select id="getProblemClassByName" resultType="ProblemClass">
+        select * from problem_class where name = #{name}
+    </select>
+    <!-- 更新分组信息-->
+        <update id="updateProblemClass" >
+            update problem_class set name = #{name}, description = #{description}
+            where id = #{id}
+        </update>
+    <!-- 新增分类信息-->
+    <insert id="insertProblemClass" >
+        insert into problem_class (name,description) values (#{name} , #{description})
+        <selectKey resultType="Long" keyProperty="id" order="AFTER">
+            select @@IDENTITY
+        </selectKey>
+    </insert>
+    <!-- 根据problem_id获取对应的class -->
+    <select id="getClassFromProblemId" resultType="ProblemClass">
+        select problem_class.*
+        from problem,
+             problem_class
+        where problem.class_id = problem_class.id
+          and problem.id = #{problem_id};
+    </select>
+
+    <!-- 根据class_id获取对应的class -->
+    <select id="getClassFromId" resultType="ProblemClass">
+        select *
+        from problem_class
+        where id = #{id}
+    </select>
+
+    <!-- 根据class_id获取对应的class；忽略description属性 -->
+    <select id="getClassPreviewFromId" resultType="ProblemClass">
+        select id, name
+        from problem_class
+        where id = #{id}
+    </select>
+    <delete id="deleteProblemClass">
+        delete from problem_class where id =${id}
+    </delete>
+</mapper>
