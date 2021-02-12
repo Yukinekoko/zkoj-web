@@ -15,7 +15,7 @@ import java.net.InetAddress;
 public class IpAddressUtil {
 
     /**
-     * 获取IP地址
+     * 获取客户端请求的真实IP地址
      */
     public static String getIpAddress(HttpServletRequest request) {
         String ip = request.getHeader("x-forwarded-for");
@@ -27,8 +27,8 @@ public class IpAddressUtil {
         }
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getRemoteAddr();
-            if (ip.equals("127.0.0.1")) {
-                //根据网卡取本机配置的IP
+            if (ip.equals("127.0.0.1") || ip.equals("0:0:0:0:0:0:0:1")) {
+                // 根据网卡取本机配置的IP
                 InetAddress inet = null;
                 try {
                     inet = InetAddress.getLocalHost();

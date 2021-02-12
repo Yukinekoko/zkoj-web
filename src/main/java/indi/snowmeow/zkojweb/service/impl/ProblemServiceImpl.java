@@ -7,13 +7,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import indi.snowmeow.zkojweb.exception.ParamErrorException;
 import indi.snowmeow.zkojweb.mapper.*;
 import indi.snowmeow.zkojweb.model.*;
+import indi.snowmeow.zkojweb.po.ProblemClassPo;
+import indi.snowmeow.zkojweb.po.ProblemLimitPo;
+import indi.snowmeow.zkojweb.po.ProblemPo;
+import indi.snowmeow.zkojweb.po.ProblemTagPo;
 import indi.snowmeow.zkojweb.service.ProblemService;
 import indi.snowmeow.zkojweb.util.BaseBody;
 import indi.snowmeow.zkojweb.util.JwtUtil;
+import indi.snowmeow.zkojweb.util.ListCopyUtil;
 import indi.snowmeow.zkojweb.util.ZipFileUtil;
-import org.apache.ibatis.annotations.Param;
+import indi.snowmeow.zkojweb.vo.ProblemClassPreviewVO;
+import indi.snowmeow.zkojweb.vo.ProblemDetailVO;
+import indi.snowmeow.zkojweb.vo.CurrentProblemLimitVO;
+import indi.snowmeow.zkojweb.vo.ProblemTagVO;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -50,6 +59,8 @@ public class ProblemServiceImpl implements ProblemService {
     ProblemLimitMapper problemLimitMapper;
     @Autowired
     CheckPointMapper checkPointMapper;
+    @Autowired
+    SolutionMapper solutionMapper;
 
     @Override
     public List<Problem> getList(int page, int limit, Long userId, Byte difficulty, Long classId, Long tagId, String searchText) {
@@ -81,9 +92,39 @@ public class ProblemServiceImpl implements ProblemService {
         return problemMapper.getProblemCount(difficulty, tagId, classId, null, null);
     }
 
-    @Override public Problem getProblemDetail(long problemId) {
-        return problemMapper.getProblemDetail(problemId);
+    @Override
+    public ProblemDetailVO getProblemDetail(long problemId) {
+        ProblemDetailVO result = new ProblemDetailVO();
 
+        ProblemPo problem = problemMapper.getProblemDetail(problemId);
+        BeanUtils.copyProperties(problem, result);
+
+        int submitCount = solutionMapper.countSubmitFromProblemId(problemId);
+        int acceptedCount = solutionMapper.countSubmitAcceptedCountFromProblemId(problemId);
+        result.setCount(submitCount);
+        result.setAccepted(acceptedCount);
+
+        if(problem.getClassId() != null) {
+            ProblemClassPo problemClass = problemClassMapper.getFromId(problem.getClassId());
+            ProblemClassPreviewVO problemClassPreviewVO = new ProblemClassPreviewVO();
+            BeanUtils.copyProperties(problemClass, problemClassPreviewVO);
+            result.setProblemClass(problemClassPreviewVO);
+        }
+
+        List<ProblemTagPo> problemTags = problemTagMapper.getListFromProblemId(problemId);
+        if(problemTags.size() > 0) {
+            List<ProblemTagVO> problemTagVOs = ListCopyUtil.copy(problemTags, ProblemTagVO.class);
+            result.setTag(problemTagVOs);
+        }
+
+        List<ProblemLimitPo> problemLimits = problemLimitMapper.getListByProblemId(problemId);
+        if(problemLimits.size() > 0) {
+            List<CurrentProblemLimitVO> currentProblemLimitVOS =
+                    ListCopyUtil.copy(problemLimits, CurrentProblemLimitVO.class);
+            result.setLimit(currentProblemLimitVOS);
+        }
+
+        return result;
     }
 
     @Override

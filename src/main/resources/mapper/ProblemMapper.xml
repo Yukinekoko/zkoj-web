@@ -78,6 +78,22 @@
             <result property="name" column="name"/>
         </collection>
     </resultMap>
+
+    <resultMap id="ProblemResultMap" type="ProblemPo">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="description" column="description"/>
+        <result property="sampleInput" column="sample_input"/>
+        <result property="sampleOutput" column="sampleOutput"/>
+        <result property="spj" column="is_spj"/>
+        <result property="hint" column="hint"/>
+        <result property="createDate" column="create_date"/>
+        <result property="difficulty" column="difficulty"/>
+        <result property="classId" column="class_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="privateProblem" column="is_private"/>
+    </resultMap>
+
     <!-- 插入problem_sample_source_code-->
     <insert id="insertSourceCode">
         insert into problem_sample_source_code (problem_id, source_code,language_id)
@@ -220,8 +236,8 @@
         limit #{offset},#{limit}
     </select>
     <!-- 获取问题详细 -->
-    <select id="getProblemDetail" resultMap="ProblemDetailResultMap">
-        select id, title, description, sample_input, sample_output, hint, create_date, difficulty,class_id
+    <select id="getProblemDetail" resultMap="ProblemResultMap">
+        select id, title, description, sample_input, sample_output, hint, create_date, difficulty, class_id
         from problem
         where id = #{problem_id}
         and is_private = 0

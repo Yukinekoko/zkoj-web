@@ -8,6 +8,7 @@ import indi.snowmeow.zkojweb.service.impl.UserServiceImpl;
 import indi.snowmeow.zkojweb.util.BaseBody;
 import indi.snowmeow.zkojweb.util.JwtUtil;
 import indi.snowmeow.zkojweb.util.ZipFileUtil;
+import indi.snowmeow.zkojweb.vo.ProblemDetailVO;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -15,10 +16,12 @@ import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,6 +33,7 @@ import java.util.Map;
  * @author snowmeow
  * @date 2020/10/19
  */
+@Validated
 @RestController
 public class ProblemController {
 
@@ -127,13 +131,12 @@ public class ProblemController {
     }
     /**
      * 获取问题详细
-     * @param problemId - 问题ID
-     * @return ProblemDetail 问题详细对象
+     * @param problemId 问题ID
      */
     @GetMapping("/problem/{problem_id}")
     public Object getProblemDetail(@PathVariable(name = "problem_id") Long problemId){
-        Problem problem = problemService.getProblemDetail(problemId);
-        BaseBody<Problem> body = new BaseBody<> ();
+        ProblemDetailVO problem = problemService.getProblemDetail(problemId);
+        BaseBody<ProblemDetailVO> body = new BaseBody<> ();
         body.setStatus(1);
         body.setMessage("Success");
         body.setData(problem);
@@ -624,8 +627,6 @@ public class ProblemController {
         body.setStatus(1);
         return body;
     }
-
-
 
     /**
      * 管理员增加 problem_class 分组

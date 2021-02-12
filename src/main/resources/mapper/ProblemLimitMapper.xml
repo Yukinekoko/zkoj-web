@@ -10,6 +10,20 @@
         <result property="memory" column="memory"/>
         <result property="time" column="time"/>
     </resultMap>
+    <!-- TODO 临时 -->
+    <resultMap id="ProblemLimitPoResultMap" type="ProblemLimitPo">
+        <id property="id" column="id"/>
+        <result property="problemId" column="problem_id"/>
+        <result property="languageId" column="language_id"/>
+        <result property="memory" column="memory"/>
+        <result property="time" column="time"/>
+    </resultMap>
+
+    <select id="getListByProblemId" resultMap="ProblemLimitPoResultMap">
+        select id, problem_id, language, memory, time
+        from problem_limit
+        where problem_id = #{problem_id}
+    </select>
 
     <select id="findListByProblemId" resultMap="ProblemLimitResultMap">
         select *

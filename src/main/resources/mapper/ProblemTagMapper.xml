@@ -8,6 +8,21 @@
         <result property="name" column="name"/>
         <result property="description" column="description"/>
     </resultMap>
+
+    <resultMap id="ProblemTagPoResultMap" type="ProblemTagPo">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="description" column="description"/>
+    </resultMap>
+
+    <!-- 获取指定问题的Tag列表 -->
+    <select id="getListFromProblemId" resultMap="ProblemTagPoResultMap">
+        select problem_tag.id, problem_tag.name
+        from problem_tag_mapping
+        left join problem_tag on problem_tag_mapping.tag_id = problem_tag.id
+        where problem_tag_mapping.problem_id = #{problem_id};
+    </select>
+
     <!--获取所有算法标签信息-->
     <select id="getTagList" resultMap="ProblemTagResultMap">
         select * from problem_tag

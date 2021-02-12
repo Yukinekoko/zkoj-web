@@ -1,5 +1,5 @@
 server:
-  port: 8084
+  port: 8080
 
 spring:
   # 环境
@@ -30,13 +30,14 @@ spring:
 # mybatis
 mybatis:
   mapper-locations: classpath:mapper/*.xml
-  type-aliases-package: indi.snowmeow.zkojweb.model
+  type-aliases-package: indi.snowmeow.zkojweb.model,indi.snowmeow.zkojweb.po
 
 path: classpath:/
-# debug
+
 #logging:
 #  level:
 #    indi:
 #      snowmeow:
 #        zkojweb:
 #          mapper: debug
+#          controller: debug

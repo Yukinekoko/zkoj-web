@@ -4,6 +4,7 @@ import indi.snowmeow.zkojweb.model.Language;
 import indi.snowmeow.zkojweb.model.Problem;
 import indi.snowmeow.zkojweb.model.ProblemClass;
 import indi.snowmeow.zkojweb.model.ProblemTag;
+import indi.snowmeow.zkojweb.vo.ProblemDetailVO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -45,7 +46,7 @@ public interface ProblemService {
      * @param problemId - 问题ID
      * @return 问题详细对象
      */
-    public Problem getProblemDetail(long problemId);
+    public ProblemDetailVO getProblemDetail(long problemId);
     /**
      *  获取所有算法标签信息
      * @return 算法标签对象

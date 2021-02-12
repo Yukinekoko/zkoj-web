@@ -29,10 +29,15 @@ import java.util.Map;
  */
 @RestController
 public class SolutionController {
+
     @Autowired
     UserServiceImpl userService;
     @Autowired
     SolutionServiceImpl solutionService;
+    @Autowired
+    MessageSender messageSender;
+    @Autowired
+    ObjectMapper jsonMapper;
 
     /**
      * 用户提交新的评测
@@ -78,11 +83,6 @@ public class SolutionController {
         return result;
     }
 
-    @Autowired
-    MessageSender messageSender;
-    @Autowired
-    ObjectMapper jsonMapper;
-
     @GetMapping("/solution")
     public Object getSolutionList(@RequestParam(defaultValue = "1")int page,
                                   @RequestParam(defaultValue = "20")int limit,
@@ -112,7 +112,6 @@ public class SolutionController {
      * @param solutionId - 评测id
      * @return 评测详细信息
      */
-
     @GetMapping("/solution/{solution_id}")
     public Object getSolutionDetail(@PathVariable(name = "solution_id") Long solutionId){
 

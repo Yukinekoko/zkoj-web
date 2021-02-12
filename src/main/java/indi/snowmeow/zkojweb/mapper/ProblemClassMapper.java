@@ -1,6 +1,7 @@
 package indi.snowmeow.zkojweb.mapper;
 
 import indi.snowmeow.zkojweb.model.ProblemClass;
+import indi.snowmeow.zkojweb.po.ProblemClassPo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -14,6 +15,13 @@ import java.util.Map;
  */
 @Mapper
 public interface ProblemClassMapper {
+
+
+    /**
+     * 获取指定题目的所属分类
+     * @param classId - 分类ID
+     * */
+    ProblemClassPo getFromId(@Param("class_id") long classId);
 
     /**
      * 获取指定题目的所属分类

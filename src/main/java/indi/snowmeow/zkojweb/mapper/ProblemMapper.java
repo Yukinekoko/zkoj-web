@@ -1,6 +1,7 @@
 package indi.snowmeow.zkojweb.mapper;
 
 import indi.snowmeow.zkojweb.model.Problem;
+import indi.snowmeow.zkojweb.po.ProblemPo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -30,7 +31,7 @@ public interface ProblemMapper {
     /**
      * 获取问题详情
      */
-    public Problem getProblemDetail(@Param("problem_id")long problemId);
+    public ProblemPo getProblemDetail(@Param("problem_id")long problemId);
     /**
      * 获取问题列表
      * @param limit - 返回数量
