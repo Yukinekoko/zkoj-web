@@ -1,30 +1,32 @@
 package indi.snowmeow.zkojweb.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import indi.snowmeow.zkojweb.exception.ParamErrorException;
+import indi.snowmeow.zkojweb.dto.ProblemListRequestDTO;
+import indi.snowmeow.zkojweb.req.ProblemListRequest;
 import indi.snowmeow.zkojweb.model.*;
 import indi.snowmeow.zkojweb.service.impl.ProblemServiceImpl;
 import indi.snowmeow.zkojweb.service.impl.UserServiceImpl;
 import indi.snowmeow.zkojweb.util.BaseBody;
 import indi.snowmeow.zkojweb.util.JwtUtil;
-import indi.snowmeow.zkojweb.util.ZipFileUtil;
+import indi.snowmeow.zkojweb.util.SubjectUtils;
 import indi.snowmeow.zkojweb.vo.ProblemDetailVO;
+import indi.snowmeow.zkojweb.vo.ProblemListVO;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.NotNull;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,48 +49,15 @@ public class ProblemController {
 
     /**
      * 获取文章列表
-     * @param page - 页码 从1开始
-     * @param limit - 每页数量；不可超过100
-     * @param difficulty - 筛选难度；可为null
-     * @param classId - 筛选分类；可为null
-     * @param tagId  - 筛选算法标签；可为null
      * */
     @GetMapping("/problem")
-    public Object getProblemList(@RequestParam(defaultValue = "1") int page,
-                                  @RequestParam(defaultValue = "20") int limit,
-                                  @RequestParam(required = false) Byte difficulty,
-                                  @RequestParam(name = "class_id", required = false) Long classId,
-                                  @RequestParam(name = "tag_id", required = false) Long tagId,
-                                 @RequestParam(name = "search", required = false) String searchText) {
-
-        if(page < 0 || limit > 100) {
-            return BaseBody.fail("Param Error");
-        }
-        if(difficulty != null) {
-            if(difficulty >= 3 || difficulty < 0) {
-                return BaseBody.fail("Param Error");
-            }
-        }
-
-        Long userId = null;
-        Subject subject = SecurityUtils.getSubject();
-        if (subject.isAuthenticated()) {
-            String token = (String)subject.getPrincipal();
-            userId = userService.findByUserName(JwtUtil.getSubject(token)).getId();
-        }
-
-        List<Problem> problemList = problemService.getList(page, limit, userId, difficulty, classId, tagId, searchText);
-        int count = problemService.getCount(difficulty, tagId, classId, searchText);
-        Map<String, Object> resultData = new HashMap<>(2);
-        resultData.put("problem_list", problemList);
-        resultData.put("count", count);
-
-        BaseBody<Map<String, Object>> responseBody = new BaseBody<>();
-        responseBody.setStatus(1);
-        responseBody.setMessage("Success");
-        responseBody.setData(resultData);
-        return responseBody;
-
+    public Object getProblemList(@Valid @ModelAttribute ProblemListRequest request) {
+        Long userId = userService.getIdFromUsername(SubjectUtils.getUsername());
+        ProblemListRequestDTO requestDTO = new ProblemListRequestDTO();
+        BeanUtils.copyProperties(request, requestDTO);
+        requestDTO.setUserId(userId);
+        ProblemListVO resultBody = problemService.list(requestDTO);
+        return BaseBody.success(resultBody);
     }
 
     /**

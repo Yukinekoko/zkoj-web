@@ -30,6 +30,10 @@
         <result property="lastDate" column="last_date"/>
         <result property="createDate" column="create_date"/>
     </resultMap>
+
+    <select id="getIdFromUserName" resultType="long">
+        select id  from user where username = #{username}
+    </select>
     <!-- 获取评测详细调用-->
     <select id="findUserNameById" resultMap="UserResultMap">
         select username,name  from user where id = #{id}

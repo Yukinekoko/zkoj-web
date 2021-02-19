@@ -82,7 +82,7 @@
         where problem_id = #{problem_id}
     </select>
     <!-- 获取指定题目的AC评测总数 -->
-    <select id="countSubmitAcceptedCountFromProblemId" resultType="int">
+    <select id="countAcceptedFromProblemId" resultType="int">
         select count(id) as accepted
         from solution
         where problem_id = #{problem_id}

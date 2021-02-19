@@ -1,18 +1,12 @@
 package indi.snowmeow.zkojweb.po;
 
-import indi.snowmeow.zkojweb.model.ProblemClass;
-import indi.snowmeow.zkojweb.model.ProblemLimit;
-import indi.snowmeow.zkojweb.model.ProblemTag;
-import indi.snowmeow.zkojweb.model.User;
-
 import java.util.Date;
-import java.util.List;
 
 /**
  * @author snowmeow
  * @date 2021/2/12
  */
-public class ProblemPo {
+public class ProblemPO {
 
     /** 唯一标识符 */
     private Long id;

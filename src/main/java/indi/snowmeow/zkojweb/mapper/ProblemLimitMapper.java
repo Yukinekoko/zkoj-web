@@ -1,12 +1,11 @@
 package indi.snowmeow.zkojweb.mapper;
 
 import indi.snowmeow.zkojweb.model.ProblemLimit;
-import indi.snowmeow.zkojweb.po.ProblemLimitPo;
+import indi.snowmeow.zkojweb.po.ProblemLimitPO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * problemLimitMapper
@@ -21,7 +20,7 @@ public interface ProblemLimitMapper {
      * @param problemId 问题id
      * @return 限制信息列表
      */
-    List<ProblemLimitPo> getListByProblemId(@Param("problem_id") long problemId);
+    List<ProblemLimitPO> getListByProblemId(@Param("problem_id") long problemId);
 
     /**
      * 获取问题限制信息

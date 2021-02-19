@@ -1,7 +1,7 @@
 package indi.snowmeow.zkojweb.mapper;
 
 import indi.snowmeow.zkojweb.model.ProblemTag;
-import indi.snowmeow.zkojweb.po.ProblemTagPo;
+import indi.snowmeow.zkojweb.po.ProblemTagPO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -18,7 +18,7 @@ public interface ProblemTagMapper {
      * 获取指定题目的算法标签列表
      * @param problemId - 题目ID
      * */
-    List<ProblemTagPo> getListFromProblemId(@Param("problem_id") long problemId);
+    List<ProblemTagPO> getListFromProblemId(@Param("problem_id") long problemId);
 
     /**
      * 获取指定题目的算法标签列表

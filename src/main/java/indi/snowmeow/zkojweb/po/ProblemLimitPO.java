@@ -4,7 +4,7 @@ package indi.snowmeow.zkojweb.po;
  * @author snowmeow
  * @date 2021/2/12
  */
-public class ProblemLimitPo {
+public class ProblemLimitPO {
 
     /** 唯一标识符 */
     private Long id;

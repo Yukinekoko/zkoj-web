@@ -14,7 +14,7 @@ import java.util.Map;
  */
 @Mapper
 public interface SolutionMapper {
-    
+
     /** 
      * 获取指定题目的评测总数
      * @param problemId - 题目ID
@@ -27,7 +27,7 @@ public interface SolutionMapper {
      * @param problemId - 题目ID
      * @return accepted - 正确评测总数
      * */
-    public int countSubmitAcceptedCountFromProblemId(@Param("problem_id") long problemId);
+    public int countAcceptedFromProblemId(@Param("problem_id") long problemId);
 
     /**
      * 获取指定用户对于指定题目的最终评测状态

@@ -26,7 +26,11 @@ public class BaseBody<T> {
      * @return body内容
      * */
     public static BaseBody<Void> success() {
-        return new BaseBody<Void>(1, "Success", null);
+        return success((Void)null);
+    }
+
+    public static <U> BaseBody<U> success(U data) {
+        return new BaseBody<U>(1, "Success", data);
     }
 
     public static BaseBody<Void> fail(String message) {

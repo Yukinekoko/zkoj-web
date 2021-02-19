@@ -4,11 +4,15 @@ import com.auth0.jwt.exceptions.TokenExpiredException;
 import indi.snowmeow.zkojweb.util.BaseBody;
 import org.apache.shiro.authc.AuthenticationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+
+import javax.validation.ConstraintViolationException;
+import javax.validation.ValidationException;
 
 /**
  * @author snowmeow
@@ -42,6 +46,18 @@ public class ExceptionHandlerController {
     public Object handleMethodArgumentTypeMismatchException(Exception e) {
         return BaseBody.fail("参数错误");
 
+    }
+
+    @ResponseBody
+    @ExceptionHandler(ConstraintViolationException.class)
+    public Object handleConstraintViolationException(Exception e) {
+        return BaseBody.fail("参数错误");
+    }
+
+    @ResponseBody
+    @ExceptionHandler(BindException.class)
+    public Object handleBindException(Exception e) {
+        return BaseBody.fail("参数错误");
     }
 
 

@@ -33,7 +33,6 @@ mybatis:
   type-aliases-package: indi.snowmeow.zkojweb.model,indi.snowmeow.zkojweb.po
 
 path: classpath:/
-
 #logging:
 #  level:
 #    indi:

@@ -1,25 +1,24 @@
 package indi.snowmeow.zkojweb.service.impl;
 
+import com.alibaba.druid.util.StringUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import indi.snowmeow.zkojweb.dto.ProblemListRequestDTO;
 import indi.snowmeow.zkojweb.exception.ParamErrorException;
 import indi.snowmeow.zkojweb.mapper.*;
 import indi.snowmeow.zkojweb.model.*;
-import indi.snowmeow.zkojweb.po.ProblemClassPo;
-import indi.snowmeow.zkojweb.po.ProblemLimitPo;
-import indi.snowmeow.zkojweb.po.ProblemPo;
-import indi.snowmeow.zkojweb.po.ProblemTagPo;
+import indi.snowmeow.zkojweb.po.ProblemClassPO;
+import indi.snowmeow.zkojweb.po.ProblemLimitPO;
+import indi.snowmeow.zkojweb.po.ProblemPO;
+import indi.snowmeow.zkojweb.po.ProblemTagPO;
 import indi.snowmeow.zkojweb.service.ProblemService;
 import indi.snowmeow.zkojweb.util.BaseBody;
 import indi.snowmeow.zkojweb.util.JwtUtil;
 import indi.snowmeow.zkojweb.util.ListCopyUtil;
 import indi.snowmeow.zkojweb.util.ZipFileUtil;
-import indi.snowmeow.zkojweb.vo.ProblemClassPreviewVO;
-import indi.snowmeow.zkojweb.vo.ProblemDetailVO;
-import indi.snowmeow.zkojweb.vo.CurrentProblemLimitVO;
-import indi.snowmeow.zkojweb.vo.ProblemTagVO;
+import indi.snowmeow.zkojweb.vo.*;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.BeanUtils;
@@ -63,20 +62,57 @@ public class ProblemServiceImpl implements ProblemService {
     SolutionMapper solutionMapper;
 
     @Override
-    public List<Problem> getList(int page, int limit, Long userId, Byte difficulty, Long classId, Long tagId, String searchText) {
+    public ProblemListVO list(ProblemListRequestDTO requestDTO) {
+        ProblemListVO result = new ProblemListVO();
 
-        int offset = (page - 1) * limit;
+        int offset = (requestDTO.getPage() - 1) * requestDTO.getLimit();
+        requestDTO.setOffset(offset);
 
-        if(searchText != null) {
-            try {
-                Integer.parseInt(searchText);
-                return problemMapper.searchPreviewList(offset, limit, userId, searchText, true);
-            } catch (NumberFormatException e) {
-                return problemMapper.searchPreviewList(offset, limit, userId, searchText, false);
+        String searchText = requestDTO.getSearchText();
+        Boolean isSearchId = null;
+        List<ProblemPO> problemPOs;
+
+        if (null != searchText) {
+            if(StringUtils.isNumber(searchText)) {
+                isSearchId = true;
+                problemPOs = problemMapper.listSearchFromId(Long.parseLong(searchText), offset, requestDTO.getLimit());
+            } else {
+                isSearchId = false;
+                problemPOs = problemMapper.listSearchFromName(searchText, offset, requestDTO.getLimit());
+            }
+        } else {
+            problemPOs = problemMapper.list(requestDTO);
+        }
+
+        List<ProblemPreviewVO> resultProblemVOs = ListCopyUtil.copy(problemPOs, ProblemPreviewVO.class);
+        for(ProblemPreviewVO item : resultProblemVOs) {
+            // TODO 低效率
+            item.setCount(solutionMapper.countSubmitFromProblemId(item.getId()));
+            item.setAccepted(solutionMapper.countAcceptedFromProblemId(item.getId()));
+
+            List<ProblemTagPO> tagPO = problemTagMapper.getListFromProblemId(item.getId());
+            if(tagPO.size() > 0) {
+                List<ProblemTagVO> tagVO = ListCopyUtil.copy(tagPO, ProblemTagVO.class);
+                item.setTag(tagVO);
+            }
+
+            ProblemClassPO classPO = problemClassMapper.getFromId(item.getId());
+            if(classPO != null) {
+                ProblemClassPreviewVO classVO = new ProblemClassPreviewVO();
+                BeanUtils.copyProperties(classPO, classVO);
+                item.setProblemClass(classVO);
+            }
+
+            if(requestDTO.getUserId() != null) {
+                item.setStatus(problemMapper.getStatus(item.getId(), requestDTO.getUserId()));
             }
         }
 
-        return problemMapper.getList(offset, limit, userId, difficulty, classId, tagId);
+        int count = problemMapper.count(requestDTO.getDifficulty(), requestDTO.getTagId(), requestDTO.getClassId(),
+            requestDTO.getSearchText(), isSearchId);
+        result.setProblemList(resultProblemVOs);
+        result.setCount(count);
+        return result;
     }
 
     @Override
@@ -84,40 +120,40 @@ public class ProblemServiceImpl implements ProblemService {
         if(searchText != null) {
             try {
                 Integer.parseInt(searchText);
-                return problemMapper.getProblemCount(difficulty, tagId, classId, searchText, true);
+                return problemMapper.count(difficulty, tagId, classId, searchText, true);
             } catch (NumberFormatException e) {
-                return problemMapper.getProblemCount(difficulty, tagId, classId, searchText, false);
+                return problemMapper.count(difficulty, tagId, classId, searchText, false);
             }
         }
-        return problemMapper.getProblemCount(difficulty, tagId, classId, null, null);
+        return problemMapper.count(difficulty, tagId, classId, null, null);
     }
 
     @Override
     public ProblemDetailVO getProblemDetail(long problemId) {
         ProblemDetailVO result = new ProblemDetailVO();
 
-        ProblemPo problem = problemMapper.getProblemDetail(problemId);
+        ProblemPO problem = problemMapper.getProblemDetail(problemId);
         BeanUtils.copyProperties(problem, result);
 
         int submitCount = solutionMapper.countSubmitFromProblemId(problemId);
-        int acceptedCount = solutionMapper.countSubmitAcceptedCountFromProblemId(problemId);
+        int acceptedCount = solutionMapper.countAcceptedFromProblemId(problemId);
         result.setCount(submitCount);
         result.setAccepted(acceptedCount);
 
         if(problem.getClassId() != null) {
-            ProblemClassPo problemClass = problemClassMapper.getFromId(problem.getClassId());
+            ProblemClassPO problemClass = problemClassMapper.getFromId(problem.getClassId());
             ProblemClassPreviewVO problemClassPreviewVO = new ProblemClassPreviewVO();
             BeanUtils.copyProperties(problemClass, problemClassPreviewVO);
             result.setProblemClass(problemClassPreviewVO);
         }
 
-        List<ProblemTagPo> problemTags = problemTagMapper.getListFromProblemId(problemId);
+        List<ProblemTagPO> problemTags = problemTagMapper.getListFromProblemId(problemId);
         if(problemTags.size() > 0) {
             List<ProblemTagVO> problemTagVOs = ListCopyUtil.copy(problemTags, ProblemTagVO.class);
             result.setTag(problemTagVOs);
         }
 
-        List<ProblemLimitPo> problemLimits = problemLimitMapper.getListByProblemId(problemId);
+        List<ProblemLimitPO> problemLimits = problemLimitMapper.getListByProblemId(problemId);
         if(problemLimits.size() > 0) {
             List<CurrentProblemLimitVO> currentProblemLimitVOS =
                     ListCopyUtil.copy(problemLimits, CurrentProblemLimitVO.class);

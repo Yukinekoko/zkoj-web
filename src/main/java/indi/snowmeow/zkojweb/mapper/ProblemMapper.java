@@ -1,7 +1,8 @@
 package indi.snowmeow.zkojweb.mapper;
 
+import indi.snowmeow.zkojweb.dto.ProblemListRequestDTO;
 import indi.snowmeow.zkojweb.model.Problem;
-import indi.snowmeow.zkojweb.po.ProblemPo;
+import indi.snowmeow.zkojweb.po.ProblemPO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -24,27 +25,27 @@ public interface ProblemMapper {
      * @param isSearchId - 是否为搜索ID；
      * @return 问题总数量
      * */
-    public int getProblemCount(@Param("difficulty") Byte difficulty, @Param("tag_id") Long tagId,
-                               @Param("class_id") Long classId, @Param("search_text") String searchText,
-                               @Param("is_search_id") Boolean isSearchId);
+    int count(@Param("difficulty") Byte difficulty, @Param("tag_id") Long tagId,
+              @Param("class_id") Long classId, @Param("search_text") String searchText,
+              @Param("is_search_id") Boolean isSearchId);
 
     /**
      * 获取问题详情
      */
-    public ProblemPo getProblemDetail(@Param("problem_id")long problemId);
+    ProblemPO getProblemDetail(@Param("problem_id")long problemId);
     /**
      * 获取问题列表
-     * @param limit - 返回数量
-     * @param offset - 偏移值
-     * @param userId - 用户ID；可为null
-     * @param difficulty - 筛选难度；可为null
-     * @param classId - 筛选分类；可为null
-     * @param tagId - 标签ID；可为null
-     * @return 问题列表
+     * @param requestDTO - 请求DTO
      * */
-    public List<Problem> getList(@Param("offset") Integer offset, @Param("limit") Integer limit,
-                                        @Param("user_id") Long userId, @Param("difficulty") Byte difficulty,
-                                        @Param("class_id")  Long classId, @Param("tag_id") Long tagId);
+    List<ProblemPO> list(ProblemListRequestDTO requestDTO);
+    /**
+     * 根据ID搜索问题列表
+     * */
+    List<ProblemPO> listSearchFromId(Long problemId, Integer offset, Integer limit);
+    /**
+     * 根据题名搜索问题列表
+     * */
+    List<ProblemPO> listSearchFromName(String name, Integer offset, Integer limit);
     /**
      * 根据关键字获取问题列表
      * @param limit - 每页数量
@@ -54,7 +55,7 @@ public interface ProblemMapper {
      * @param isSearchId - 当为true时指定对ID进行搜索；false时对标题进行搜索；
      * @return 问题列表
      * */
-    public List<Problem> searchPreviewList(@Param("offset") Integer offset, @Param("limit") Integer limit,
+    List<Problem> searchPreviewList(@Param("offset") Integer offset, @Param("limit") Integer limit,
                                            @Param("user_id") Long userId, @Param("search_text") String searchText,
                                            @Param("is_search_id") Boolean isSearchId);
 
@@ -65,7 +66,7 @@ public interface ProblemMapper {
      * @param problemId 问题ID
      * @return 用户对指定题目的评测状态
      * */
-    Integer getStatus(@Param("problem_id") Long problemId, @Param("user_id") Long userId);
+    Byte getStatus(@Param("problem_id") Long problemId, @Param("user_id") Long userId);
 
     /**
      * 根据关键字查询题目
@@ -75,7 +76,7 @@ public interface ProblemMapper {
      * @param limit - 每页数量 默认20
      * @return List<Problem> 问题列表
      */
-    public List<Problem> getProblemBySearch(@Param("offset")Integer offset,@Param("limit") Integer limit,
+    List<Problem> getProblemBySearch(@Param("offset")Integer offset,@Param("limit") Integer limit,
                                             @Param("search")String search , @Param("is_number")Boolean isNumber);
 
     /**
@@ -89,7 +90,7 @@ public interface ProblemMapper {
      * @param limit - 每页数量 默认20
      * @return List<Problem> 问题列表
      */
-    public List<Problem> getProblemByConditions(@Param("difficulty")Byte difficulty,
+    List<Problem> getProblemByConditions(@Param("difficulty")Byte difficulty,
                                                 @Param("class_id")Long classId,
                                                 @Param("tag_id")Long tagId,
                                                 @Param("upload_username")String uploadUsername,
@@ -102,19 +103,19 @@ public interface ProblemMapper {
      * @return 数据影响行数
      *
      */
-    public  int insertProblem(Problem problem);
+     int insertProblem(Problem problem);
 
-    public int insertSourceCode(Long problemId,String sourceCode , Long languageId);
+    int insertSourceCode(Long problemId,String sourceCode , Long languageId);
 
-    public Problem getProblemById(Long problemId);
+    Problem getProblemById(Long problemId);
 
-    public  int updateProblemInfo(Map<String, Object> problemMap);
+     int updateProblemInfo(Map<String, Object> problemMap);
 
-    public int countProblemByConditions(@Param("difficulty")Byte difficulty,
+    int countProblemByConditions(@Param("difficulty")Byte difficulty,
                                         @Param("class_id")Long classId,
                                         @Param("tag_id")Long tagId,
                                         @Param("upload_username")String uploadUsername,
                                         @Param("upload_user_id") Long uploadUserId);
 
-    public int countProblemBySearch(@Param("search")String search , @Param("is_number")Boolean isNumber);
+    int countProblemBySearch(@Param("search")String search , @Param("is_number")Boolean isNumber);
 }

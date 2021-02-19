@@ -79,7 +79,7 @@
         </collection>
     </resultMap>
 
-    <resultMap id="ProblemResultMap" type="ProblemPo">
+    <resultMap id="ProblemResultMap" type="ProblemPO">
         <id property="id" column="id"/>
         <result property="title" column="title"/>
         <result property="description" column="description"/>
@@ -193,7 +193,7 @@
     </select>
 
     <!-- 获取问题列表 -->
-    <select id="getList" resultMap="ProblemPreviewResultMap">
+    <!--<select id="list" resultMap="ProblemPreviewResultMap">
         select problem.title, problem.difficulty, problem.class_id, problem.id
         <choose>
                 <when test="user_id != null">,#{user_id} as user_id</when>
@@ -216,8 +216,49 @@
             </if>
         </where>
         limit #{offset},#{limit}
+    </select>-->
+    <select id="list" resultMap="ProblemResultMap">
+        select id, title, description, sample_input, sample_output, is_spj, hint, create_date, difficulty, class_id,
+           user_id, is_private
+        from problem
+        <if test="classId != null">
+            left join problem_tag_mapping ptm on problem.id = ptm.problem_id
+            left join problem_tag pt on ptm.tag_id = pt.id
+        </if>
+        <if test="tagId != null">
+            left join problem_class pc on problem.class_id = pc.id
+        </if>
+        <where>
+            problem.is_private = 0
+            <if test="classId != null">
+                and class_id = #{classId}
+            </if>
+            <if test="tagId != null">
+                and tag_id = #{tagId}
+            </if>
+            <if test="difficulty != null">
+                and difficulty = #{difficulty}
+            </if>
+        </where>
+        limit #{offset},#{limit}
     </select>
-    <!-- 根据关键字搜索问题列表 -->
+    <!-- 根据题目ID搜索问题列表 -->
+    <select id="listSearchFromId" resultMap="ProblemResultMap">
+        select id, title, description, sample_input, sample_output, is_spj, hint, create_date, difficulty, class_id,
+        user_id, is_private
+        from problem
+        where id = #{problemId}
+        limit #{offset},#{limit}
+    </select>
+    <!-- 根据题目名搜索问题列表 TODO SQL注入风险 -->
+    <select id="listSearchFromName" resultMap="ProblemResultMap">
+        select id, title, description, sample_input, sample_output, is_spj, hint, create_date, difficulty, class_id,
+               user_id, is_private
+        from problem
+        where title like '%${name}%'
+        limit #{offset},#{limit}
+    </select>
+    <!-- 根据关键字搜索问题列表 弃用 -->
     <select id="searchPreviewList" resultMap="ProblemPreviewResultMap">
         select problem.title, problem.difficulty, problem.class_id, problem.id
         <choose>
@@ -253,7 +294,7 @@
         </selectKey>
     </insert>
     <!-- 获取问题总数 -->
-    <select id="getProblemCount" resultType="int">
+    <select id="count" resultType="int">
         select count(id) as count
         from problem
         <where>

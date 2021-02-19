@@ -8,6 +8,8 @@ import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authc.AuthenticatingFilter;
 import org.apache.shiro.web.filter.authc.AuthenticationFilter;
 import org.apache.shiro.web.util.WebUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 
@@ -22,6 +24,8 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class JwtFilter extends AuthenticatingFilter {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(JwtFilter.class);
+
     /**
      * 表示是否允许访问。父类会在请求进入拦截器后调用该方法，返回true则继续，否则调用onAccessDenied方法。
      * 这里调用父类的executeLogin()，这个方法首先会调用createToken(),然后调用Subject.login()。
@@ -34,10 +38,11 @@ public class JwtFilter extends AuthenticatingFilter {
         String token = ((HttpServletRequest) request).getHeader("Authorization");
         if ( token != null) {
             token = token.replace("Bearer ", "");
-            System.out.println("有token");
+            LOGGER.info("有token");
             //如有则使用executeLogin执行登录检查token是否正确
             try {
                 access = executeLogin(request, response);
+                LOGGER.info("executeLogin执行通过，结果为：{}", access);
                 if (access) {
                     //是否刷新token
                     //20分钟剩余时间
@@ -65,7 +70,7 @@ public class JwtFilter extends AuthenticatingFilter {
      * */
     @Override
     protected boolean onAccessDenied(ServletRequest servletRequest, ServletResponse servletResponse) throws Exception {
-        System.out.println("onAccessDenied");
+        LOGGER.info("进入onAccessDenied");
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json;charset=UTF-8");
@@ -81,7 +86,7 @@ public class JwtFilter extends AuthenticatingFilter {
      * */
     @Override
     protected AuthenticationToken createToken(ServletRequest servletRequest, ServletResponse servletResponse) throws Exception {
-        System.out.println("createToken");
+        LOGGER.info("进入createToken");
         String token = ((HttpServletRequest) servletRequest)
                 .getHeader("Authorization")
                 .replaceFirst("Bearer ", "");
@@ -92,14 +97,17 @@ public class JwtFilter extends AuthenticatingFilter {
     protected boolean executeLogin(ServletRequest request, ServletResponse response) throws Exception {
         AuthenticationToken token = this.createToken(request, response);
         if (token == null) {
+            LOGGER.info("没有获取到token");
             String msg = "createToken method implementation returned null. A valid non-null AuthenticationToken must be created in order to execute a login attempt.";
             throw new IllegalStateException(msg);
         } else {
             try {
                 Subject subject = this.getSubject(request, response);
                 subject.login(token);
+                LOGGER.info("login方法通过");
                 return this.onLoginSuccess(token, subject, request, response);
             } catch (AuthenticationException var5) {
+                LOGGER.info("login方法失败");
                 return this.onLoginFailure(token, var5, request, response);
             }
         }

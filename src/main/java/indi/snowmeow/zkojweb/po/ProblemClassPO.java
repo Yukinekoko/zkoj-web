@@ -4,12 +4,14 @@ package indi.snowmeow.zkojweb.po;
  * @author snowmeow
  * @date 2021/2/12
  */
-public class ProblemTagPo {
+public class ProblemClassPO {
 
     /* 唯一标识符 */
     private Long id;
-    /* 算法标签名 */
+    /* 分类名 */
     private String name;
+    /* 分类详细描述 */
+    private String description;
 
     public Long getId() {
         return id;
@@ -25,5 +27,13 @@ public class ProblemTagPo {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

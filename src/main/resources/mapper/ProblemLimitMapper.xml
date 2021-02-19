@@ -11,7 +11,7 @@
         <result property="time" column="time"/>
     </resultMap>
     <!-- TODO 临时 -->
-    <resultMap id="ProblemLimitPoResultMap" type="ProblemLimitPo">
+    <resultMap id="ProblemLimitPoResultMap" type="ProblemLimitPO">
         <id property="id" column="id"/>
         <result property="problemId" column="problem_id"/>
         <result property="languageId" column="language_id"/>

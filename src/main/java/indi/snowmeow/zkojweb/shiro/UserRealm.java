@@ -9,6 +9,8 @@ import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.checkerframework.checker.units.qual.A;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -17,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @date    2020/10/13
  * */
 public class UserRealm extends AuthorizingRealm {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserRealm.class);
 
     @Autowired
     private UserServiceImpl userService;
@@ -42,7 +46,7 @@ public class UserRealm extends AuthorizingRealm {
      * */
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
-
+        LOGGER.info("进入{}登录逻辑", UserRealm.class.getName());
         UsernamePasswordToken usernamePasswordToken = (UsernamePasswordToken) authenticationToken;
         String username = usernamePasswordToken.getUsername();
         String password = String.valueOf(usernamePasswordToken.getPassword());

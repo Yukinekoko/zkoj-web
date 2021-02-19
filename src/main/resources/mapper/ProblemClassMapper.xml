@@ -13,7 +13,7 @@
     </resultMap>
 
     <!-- 根据id获取对应的class -->
-    <select id="getFromId" resultType="ProblemClassPo">
+    <select id="getFromId" resultType="ProblemClassPO">
         select id, name, description
         from problem_class
         where id = #{class_id};

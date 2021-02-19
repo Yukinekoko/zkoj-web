@@ -7,7 +7,11 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.UUID;
@@ -16,18 +20,28 @@ import java.util.UUID;
  * @author snowmeow
  * @date 2021/01/26
  */
+@Component
 public class JwtUtil {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(JwtUtil.class);
     /** 加盐值 */
-    @Value("${zkoj.jwt-salt}")
     private static String SALT;
     /** 加密方式 */
-    private static Algorithm algorithm = Algorithm.HMAC256(SALT);
+    private static Algorithm algorithm;
     /** 默认登录时间30分钟 */
     private static final long DEFAULT_TTL = 1000 * 60 * 30;
     /** 发行者 */
-    @Value("${zkoj.jwt-issuer}")
     private static String ISSUER;
+
+    @Value("${zkoj.jwt-salt}")
+    public void initSALT(String SALT) {
+        JwtUtil.SALT = SALT;
+        algorithm = Algorithm.HMAC256(SALT);
+    }
+    @Value("${zkoj.jwt-issuer}")
+    public void initISSUER(String ISSUER) {
+        JwtUtil.ISSUER = ISSUER;
+    }
 
     /** 生成jwt token
      * @param subject username
@@ -81,6 +95,7 @@ public class JwtUtil {
      * @return 验证是否通过
      * */
     static public boolean verify(String token) {
+        LOGGER.info("进入token检测");
         try{
             JWTVerifier verifier = JWT.require(algorithm)
                     .withIssuer(ISSUER)
@@ -88,6 +103,7 @@ public class JwtUtil {
             verifier.verify(token);
         } catch (JWTVerificationException e) {
             // 过期或是信息有误
+            LOGGER.info("token认证失败:{}", e.getMessage());
             return false;
         }
         return true;

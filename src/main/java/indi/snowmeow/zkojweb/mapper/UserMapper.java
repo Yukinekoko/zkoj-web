@@ -15,6 +15,8 @@ import java.util.Map;
 @Mapper
 public interface UserMapper {
 
+    Long getIdFromUserName(String username);
+
     public User findByUsername(String username);
 
     public User findByName(String name);

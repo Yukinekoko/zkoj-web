@@ -11,6 +11,8 @@ import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.Subject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -20,6 +22,8 @@ import java.util.Set;
  * @date 2020/10/14
  */
 public class JwtRealm extends AuthorizingRealm {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(JwtRealm.class);
 
     @Override
     public boolean supports(AuthenticationToken token) {
@@ -47,11 +51,13 @@ public class JwtRealm extends AuthorizingRealm {
      * */
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
-
+        LOGGER.info("进入{}登录逻辑", JwtRealm.class.getName());
         String token = (String) authenticationToken.getCredentials();
         if(JwtUtil.verify(token)) {
+            LOGGER.info("token认证成功！");
             return new SimpleAuthenticationInfo(token, token, "");
         }
+        LOGGER.info("token认证失败！");
         throw new AuthenticationException("token认证失败！");
     }
 }

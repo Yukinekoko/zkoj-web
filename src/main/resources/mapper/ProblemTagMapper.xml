@@ -9,14 +9,13 @@
         <result property="description" column="description"/>
     </resultMap>
 
-    <resultMap id="ProblemTagPoResultMap" type="ProblemTagPo">
+    <resultMap id="ProblemTagPOResultMap" type="ProblemTagPO">
         <result property="id" column="id"/>
         <result property="name" column="name"/>
-        <result property="description" column="description"/>
     </resultMap>
 
     <!-- 获取指定问题的Tag列表 -->
-    <select id="getListFromProblemId" resultMap="ProblemTagPoResultMap">
+    <select id="getListFromProblemId" resultMap="ProblemTagPOResultMap">
         select problem_tag.id, problem_tag.name
         from problem_tag_mapping
         left join problem_tag on problem_tag_mapping.tag_id = problem_tag.id

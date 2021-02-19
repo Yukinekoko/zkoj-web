@@ -1,10 +1,13 @@
 package indi.snowmeow.zkojweb.service;
 
+import indi.snowmeow.zkojweb.dto.ProblemListRequestDTO;
 import indi.snowmeow.zkojweb.model.Language;
 import indi.snowmeow.zkojweb.model.Problem;
 import indi.snowmeow.zkojweb.model.ProblemClass;
 import indi.snowmeow.zkojweb.model.ProblemTag;
 import indi.snowmeow.zkojweb.vo.ProblemDetailVO;
+import indi.snowmeow.zkojweb.vo.ProblemListVO;
+import indi.snowmeow.zkojweb.vo.ProblemPreviewVO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,17 +22,9 @@ public interface ProblemService {
 
     /**
      * 获取问题列表
-     * @param page - 页码；从1开始
-     * @param limit - 每页数量
-     * @return 问题列表
-     * @param userId - 用户ID；可为null
-     * @param difficulty - 筛选难度；可为null
-     * @param classId - 筛选分类；可为null
-     * @param tagId  - 筛选算法标签；可为null
-     * @param searchText - 搜索关键字；可为null
+     * @param requestDTO - 请求参数DTO
      * */
-    public List<Problem> getList(int page, int limit, Long userId, Byte difficulty,
-                                        Long classId, Long tagId, String searchText);
+    ProblemListVO list(ProblemListRequestDTO requestDTO);
 
     /**
      * 获取问题总数
