@@ -8,19 +8,17 @@ import indi.snowmeow.zkojweb.service.impl.ProblemServiceImpl;
 import indi.snowmeow.zkojweb.service.impl.UserServiceImpl;
 import indi.snowmeow.zkojweb.util.BaseBody;
 import indi.snowmeow.zkojweb.util.SubjectUtils;
-import indi.snowmeow.zkojweb.vo.ProblemDetailVO;
-import indi.snowmeow.zkojweb.vo.ProblemListVO;
+import indi.snowmeow.zkojweb.model.vo.ProblemDetailVO;
+import indi.snowmeow.zkojweb.model.vo.ProblemListVO;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +57,7 @@ public class ProblemController {
     public Object getProblemCount(@Valid @ModelAttribute ProblemCountRequest request) {
         ProblemCountDTO requestDTO = new ProblemCountDTO();
         BeanUtils.copyProperties(request, requestDTO);
-        int count = problemService.count(requestDTO);
+        int count = problemService.countByPublic(requestDTO);
         return BaseBody.success(count);
     }
 
@@ -78,192 +76,13 @@ public class ProblemController {
      */
     @RequiresRoles(value = {"SUPER_ADMIN","ADMIN"}, logical = Logical.OR)
     @PutMapping("/problem")
-    public Object updateProblemInfo(@RequestBody Map<String, Object> requestBody) {
-
-        BaseBody body = new BaseBody<>();
-        Object id = requestBody.get("id");
-        if (id == null) {
-            return BaseBody.fail("PROBLEM ID IS NULL");
+    public Object updateProblemInfo(@RequestBody ProblemUpdateRequest request) {
+        ProblemUpdateDTO requestDTO = new ProblemUpdateDTO();
+        BeanUtils.copyProperties(request, requestDTO);
+        if(problemService.update(requestDTO)) {
+            return BaseBody.success();
         }
-        System.out.println(id);
-        String idStr = id.toString();
-        Long problemId = Long.parseLong(idStr);
-        Problem problem = problemService.getProblemById(problemId);
-        if (problem == null) {
-            return BaseBody.fail("PROBLEM DON'T EXISTS");
-        }
-
-        String title = (String) requestBody.get("title");
-        if (title != null) {
-            if (title.length() > 40) {
-                return BaseBody.fail("TITLE TOO LONG");
-            }
-        }
-        Map<String, Object> problemMap = new HashMap<>();
-        problemMap.put("id", problemId);
-        problemMap.put("title", title);
-        // problem.setTitle(title);
-        String sampleInput = (String) requestBody.get("sample_input");
-        problemMap.put("sampleInput", sampleInput);
-        //  problem.setSampleInput(sampleInput);
-        String sampleOutput = (String) requestBody.get("sample_output");
-        problemMap.put("sampleOutput", sampleOutput);
-        //  problem.setSampleOutput(sampleOutput);
-        String description = (String) requestBody.get("description");
-        problemMap.put("description", description);
-        // problem.setDescription(description);
-        String hint = (String) requestBody.get("hint");
-        problemMap.put("hint", hint);
-        // problem.setHint(hint);
-        Boolean isPrivate = (Boolean) requestBody.get("is_private");
-        problemMap.put("isPrivate", isPrivate);
-        // problem.setPrivate(isPrivate);
-        Object object = requestBody.get("difficulty");
-        if (object != null) {
-                String diffstr = object.toString();
-                Byte difficulty = Byte.valueOf(diffstr);
-                System.out.println(difficulty);
-                problemMap.put("difficulty",difficulty);
-    }
-      //  problem.setDifficulty(difficulty);
-
-        Object problemClassId = requestBody.get("problem_class");
-        if (problemClassId != null) {
-            String pcIdStr = problemClassId.toString();
-            Long pcId = Long.parseLong(pcIdStr);
-            ProblemClass problemClass = problemService.getClassFromId(pcId);
-            if (problemClass == null) {
-                return BaseBody.fail("PROBLEM CLASS DON'T EXISTS");
-            }
-            // problem.setProblemClass(problemClass);
-            problemMap.put("classId", pcId);
-        }
-        if (description!=null|| //描述
-                title!=null|| //题目
-                sampleInput!=null|| //样例输入
-                sampleOutput!=null|| // 样例输出
-                hint!=null|| //hint
-                problemClassId!=null|| //分组
-                isPrivate!=null||//是否公开
-                object!=null //难度
-        ) {
-            int isSuccess = problemService.updateProblemInfo(problemMap);
-            if (isSuccess < 1) {
-                return BaseBody.fail("UPDATE ERROR");
-            }
-        }
-        //修改标签 采用 先把problem id 对应的标签全部删除再重新插入
-        List<Integer> Tag =(List<Integer>) requestBody.get("tag");
-        if (Tag!=null) {
-            Long []tags = new Long[Tag.size()];
-            int a = 0;
-            for (Integer tag : Tag) {
-                Long tagId = Long.valueOf(tag);
-                tags[a++] = tagId;
-                ProblemTag problemTag = problemService.getTagById(tagId);
-                if (problemTag == null) {
-                    return BaseBody.fail("PROBLEM TAG " + a + " DON'T EXISTS");
-                }
-            }
-            int isSuccess = problemService.updateProblemTagList(tags,problemId);
-            if (isSuccess<1){
-                return BaseBody.fail("Problem Tag Insert Error");
-            }
-        }
-
-        body.setStatus(1);
-        body.setMessage("Success");
-        return body;
-    }
-
-    /**
-     * 删除算法标签
-     * @requesbody
-     * @return body
-     */
-    @RequiresRoles(value = {"SUPER_ADMIN","ADMIN"}, logical = Logical.OR)
-    @DeleteMapping("/tag")
-    public Object deleteProblemTag(@RequestBody Map<String, Object> requestBody ){
-
-        Object id = requestBody.get("id");
-        if (id == null) {
-            return BaseBody.fail("TAG ID IS NULL");
-        }
-        System.out.println(id);
-        String idStr = id.toString();
-        Long tagId = Long.parseLong(idStr);
-        ProblemTag problemTag = problemService.getTagById(tagId);
-        if (problemTag == null) {
-            return BaseBody.fail("This tag is not exists");
-        }
-        int isSuccess = problemService.deleteProblemTag(tagId);
-
-        BaseBody body = new BaseBody();
-        body.setMessage("Success");
-        body.setStatus(1);
-        return body;
-
-    }
-    /**
-     * 删除分组
-     * @requestbody
-     * @return body
-     *
-     */
-    @RequiresRoles(value = {"SUPER_ADMIN","ADMIN"}, logical = Logical.OR)
-    @DeleteMapping("/problem-class")
-    public Object deleteProblemClass(@RequestBody Map<String, Object> requestBody){
-        Object id = requestBody.get("id");
-        if (id == null) {
-            return BaseBody.fail("CLASS ID IS NULL");
-        }
-        System.out.println(id);
-        String idStr = id.toString();
-        Long classId = Long.parseLong(idStr);
-        ProblemClass problemClass = problemService.getClassFromId(classId);
-        if (problemClass == null) {
-            return BaseBody.fail("This Class is not exists");
-        }
-        int isSuccess = problemService.deleteProblemClass(classId);
-
-        BaseBody body = new BaseBody();
-        body.setMessage("Success");
-        body.setStatus(1);
-        return body;
-
-    }
-    /**
-     * 获取问题测试数据
-     * @requestbody
-     * @return
-     */
-    @RequiresRoles(value = {"SUPER_ADMIN","ADMIN"}, logical = Logical.OR)
-    @GetMapping("/problem/check-point/{problem_id}")
-    public Object getCheckPoint(@PathVariable(name = "problem_id") Long problemId){
-        Problem problem = problemService.getProblemById(problemId);
-        if (problem==null)
-            return BaseBody.fail("Problem don't exists");
-        List<Map<String, Object>>  checkPointList = problemService.getProblemCheckPoint(problemId);
-        Map<String, Object> data = new HashMap<> ();
-        int count = checkPointList.size();
-        data.put("check_point_list",checkPointList);
-        data.put("count",count);
-        BaseBody<Map<String, Object>> body = new BaseBody<> ();
-        body.setData(data);
-        body.setStatus(1);
-        body.setMessage("Success");
-        return body;
-
-    }
-    /**
-     * 修改测试数据
-     *
-     */
-    @RequiresRoles(value = {"SUPER_ADMIN","ADMIN"}, logical = Logical.OR)
-    public Object updateCheckPointData(){
-        //先删除所有的对应problemid的测试数据，重新插入新的。
-        return null;
-
+        return BaseBody.fail("Unknown Error");
     }
 
     /**
@@ -281,7 +100,7 @@ public class ProblemController {
      */
     @RequiresRoles(value = {"SUPER_ADMIN","ADMIN"}, logical = Logical.OR)
     @GetMapping("/iacs/problem")
-    public Object searchProblem(
+    public Object adminGetProblemList(
             @RequestParam(name = "difficulty" , required = false) Byte difficulty,
             @RequestParam(name = "class_id" ,required = false)    Long classId,
             @RequestParam(name = "tag_id", required = false)      Long tagId,
@@ -395,164 +214,5 @@ public class ProblemController {
 
         return body;
     }
-    /**
-     * 修改问题测试数据
-     */
-    @RequiresRoles(value = {"SUPER_ADMIN","ADMIN"}, logical = Logical.OR)
-    @PutMapping("/problem/check-point")
-    public Object updateProblemCheckPoint(HttpServletRequest request){
 
-        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-        Object obj = multipartRequest.getParameter("problem_id");
-        if (obj == null) {
-            return BaseBody.fail("Please submit problem id");
-        }
-        String str = obj.toString();
-        Long problemId = Long.parseLong(str);
-        Problem problem = problemService.getProblemById(problemId);
-        if (problem == null) {
-            return BaseBody.fail("Problem not exists");
-        }
-        MultipartFile file = multipartRequest.getFile("check_point_file");
-        String checkPointString = multipartRequest.getParameter("check_point_json");
-        BaseBody body = (BaseBody)problemService.updateProblemCheckPoint(problemId,file,checkPointString);
-
-        return body;
-    }
-
-    /**
-     * 管理员增加算法标签
-     * @param requestBody -{name}
-     */
-    @RequiresRoles(value = {"SUPER_ADMIN","ADMIN"}, logical = Logical.OR)
-    @PostMapping("/tag")
-    public Object insertTag(@RequestBody Map<String, Object> requestBody){
-        String name = (String) requestBody.get("name");
-        if (name==null)
-            return BaseBody.fail("PARAM ERROR");
-        if (name.length()>40)
-           return BaseBody.fail("PARAM TOO LONG");
-        ProblemTag problemTag = new ProblemTag();
-        problemTag.setName(name);
-        ProblemTag tag = problemService.getTagByName(name);
-        if (tag!=null) {
-            return  BaseBody.fail("TAG ALREADY EXISTS");
-        }
-       int isSuccess =  problemService.insertTag(problemTag);
-       if (isSuccess < 1) {
-           return  BaseBody.fail("INSERT ERROR");
-       }
-        Long key = problemTag.getId();
-        Map<String, Object> data = new HashMap<> ();
-        data.put("id",key);
-        BaseBody<Map<String, Object>> body = new BaseBody<> ();
-        body.setStatus(1);
-        body.setMessage("Success");
-        body.setData(data);
-        return body;
-    }
-    /**
-     * 管理员修改算法标签
-     * @param requestBody -{id,name}
-     */
-    @RequiresRoles(value = {"SUPER_ADMIN","ADMIN"}, logical = Logical.OR)
-    @PutMapping("/tag")
-    public Object updateProblemTag(@RequestBody Map<String, Object> requestBody){
-        String name = (String) requestBody.get("name");
-        String id = (String) requestBody.get("id");
-        if (name==null||id == null)
-            return BaseBody.fail("PARAM ERROR");
-        if (name.length()>40)
-            return BaseBody.fail("PARAM TOO LONG");
-        Long ID = Long.parseLong(id);
-        ProblemTag tag = problemService.getTagByName(name);
-        if (tag!=null) {
-            return  BaseBody.fail("TAG ALREADY EXISTS");
-        }
-        ProblemTag problemTag =new ProblemTag();
-        problemTag.setId(ID);
-        problemTag.setName(name);
-        int isSuccess = problemService.updateProblemTag(problemTag);
-        if (isSuccess < 1) {
-            return BaseBody.fail("UPDATE ERROR");
-        }
-        BaseBody body = new BaseBody();
-        body.setMessage("Success");
-        body.setStatus(1);
-        return body;
-
-    }
-
-    /**
-     * 管理员修改分组信息
-     * @param requestBody -{id,name,description}
-     */
-    @RequiresRoles(value = {"SUPER_ADMIN","ADMIN"}, logical = Logical.OR)
-    @PutMapping("/problem-class")
-    public Object updateProblemClass(@RequestBody Map<String, Object> requestBody){
-        String name = (String) requestBody.get("name");
-        String description = (String) requestBody.get("description");
-        String id = (String) requestBody.get("id");
-        if (name==null||description == null||id==null)
-            return BaseBody.fail("PARAM ERROR");
-        if (name.length()>40 ||description.length() > 255){
-            return BaseBody.fail("PARAM TOO LONG");
-        }
-        Long ID = Long.parseLong(id);
-        ProblemClass pc = problemService.getProblemClassByName(name);
-        if (pc!=null){
-            //判断其他名字相同的id 与这个id是否为相同
-            if (!(pc.getId().equals(ID)))
-            return  BaseBody.fail("CLASS NAME ALREADY EXISTS");
-        }
-        ProblemClass problemClass = new ProblemClass();
-        problemClass.setName(name);
-        problemClass.setId(ID);
-        problemClass.setDescription(description);
-        int isSuccess =  problemService.updateProblemClass(problemClass);
-        if (isSuccess<1){
-            return BaseBody.fail("UPDATE ERROR");
-        }
-        BaseBody body = new BaseBody();
-        body.setMessage("Success");
-        body.setStatus(1);
-        return body;
-    }
-
-    /**
-     * 管理员增加 problem_class 分组
-     * @param requestBody -{name,description}
-     *
-     */
-    @RequiresRoles(value = {"SUPER_ADMIN","ADMIN"}, logical = Logical.OR)
-    @PostMapping("/problem-class")
-    public Object insertProblemClass(@RequestBody Map<String, Object> requestBody){
-
-        String name = (String) requestBody.get("name");
-        String description = (String) requestBody.get("description");
-        if (name==null||description == null)
-            return BaseBody.fail("PARAM ERROR");
-        if (name.length()>40 ||description.length() > 255){
-            return BaseBody.fail("PARAM TOO LONG");
-        }
-        ProblemClass problemClass = new ProblemClass();
-        problemClass.setName(name);
-        problemClass.setDescription(description);
-        ProblemClass pc = problemService.getProblemClassByName(name);
-        if (pc!=null){
-            return  BaseBody.fail("CLASS NAME ALREADY EXISTS");
-        }
-        int isSuccess =  problemService.insertProblemClass(problemClass);
-        if (isSuccess<1){
-            return BaseBody.fail("INSERT ERROR");
-        }
-        Long key = problemClass.getId();
-        Map<String, Object> data = new HashMap<> ();
-        data.put("id",key);
-        BaseBody<Map<String, Object>> body = new BaseBody<> ();
-        body.setStatus(1);
-        body.setMessage("Success");
-        body.setData(data);
-        return body;
-    }
 }

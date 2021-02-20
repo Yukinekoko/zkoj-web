@@ -1,4 +1,4 @@
-package indi.snowmeow.zkojweb.vo;
+package indi.snowmeow.zkojweb.model.vo;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -8,11 +8,11 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
  * @date 2021/2/12
  */
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class ProblemClassPreviewVO {
+public class ProblemTagVO {
 
     /* 唯一标识符 */
     private Long id;
-    /* 分类名 */
+    /* 算法标签名 */
     private String name;
 
     public Long getId() {
@@ -30,5 +30,4 @@ public class ProblemClassPreviewVO {
     public void setName(String name) {
         this.name = name;
     }
-
 }

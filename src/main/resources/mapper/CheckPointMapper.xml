@@ -3,8 +3,8 @@
 
 <mapper namespace="indi.snowmeow.zkojweb.mapper.CheckPointMapper">
 
-    <select id="findListByProblemId" resultType="CheckPoint">
-        select * from check_point where problem_id=#{problem_id}
+    <select id="getFromProblemId" resultType="ProblemCheckPointPO">
+        select id, problem_id, input, output from check_point where problem_id=#{problem_id}
     </select>
     <insert id="insertCheckPoint">
         insert into check_point (problem_id , input , output)
@@ -18,7 +18,4 @@
         <result property="input" column="input"/>
         <result property="output" column="output"/>
     </resultMap>
-    <select id="getProblemCheckPoint" resultMap="CheckPointResultMap">
-        select input,output from check_point where problem_id = ${problemId}
-    </select>
 </mapper>

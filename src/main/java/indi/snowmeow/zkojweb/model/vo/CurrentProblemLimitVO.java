@@ -1,4 +1,4 @@
-package indi.snowmeow.zkojweb.vo;
+package indi.snowmeow.zkojweb.model.vo;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;

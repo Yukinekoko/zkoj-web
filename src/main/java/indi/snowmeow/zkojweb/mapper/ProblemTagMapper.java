@@ -39,19 +39,17 @@ public interface ProblemTagMapper {
      */
     List<ProblemTagPO> list();
 
-    public int insertTag(ProblemTag problemTag);
+    int save(ProblemTagPO problemTag);
 
-    public ProblemTag getTagByName(String name);
+    ProblemTagPO getFromName(String name);
 
-    public int updateProblemTag(ProblemTag problemTag);
+    int update(ProblemTagPO problemTag);
 
-    public ProblemTag getTagById(Long id);
+    ProblemTagPO getFromId(Long id);
 
     public int insertProblemTag(Long problemId,Long tagId);
 
-    //组合 update
-    public int deleteProblemTagList(Long problemId);
     public int insertProblemTagList(Long tagId, Long problemId);
 
-    public int deleteProblemTag(Long tagId);
+    int delete(Long tagId);
 }

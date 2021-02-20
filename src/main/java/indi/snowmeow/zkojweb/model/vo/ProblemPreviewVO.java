@@ -1,44 +1,48 @@
-package indi.snowmeow.zkojweb.vo;
+package indi.snowmeow.zkojweb.model.vo;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
-import java.util.Date;
 import java.util.List;
 
 /**
+ * 问题简略信息
  * @author snowmeow
- * @date 2021/2/12
+ * @date 2021/2/14
  */
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class ProblemDetailVO {
+public class ProblemPreviewVO {
 
     /** 唯一标识符 */
     private Long id;
     /** 标题 */
     private String title;
-    /** 题目描述 */
-    private String description;
-    /** 样例输入 */
-    private String sampleInput;
-    /** 样例输出 */
-    private String sampleOutput;
-    /** 提示 */
-    private String hint;
-    /** 创建日期 */
-    private Date createDate;
     /** 难度ID */
     private Byte difficulty;
     /** 总提交数 */
     private Integer count;
     /** 总AC数 */
     private Integer accepted;
+    /** 用户做题状态 */
+    private Byte status;
     /** 标签 */
     private List<ProblemTagVO> tag;
     /** 分类 */
     private ProblemClassPreviewVO problemClass;
-    /** 限制 */
-    private List<CurrentProblemLimitVO> limit;
+
+    @Override
+    public String toString() {
+        return "ProblemPreviewVO{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", difficulty=" + difficulty +
+                ", count=" + count +
+                ", accepted=" + accepted +
+                ", status=" + status +
+                ", tag=" + tag +
+                ", problemClass=" + problemClass +
+                '}';
+    }
 
     public Long getId() {
         return id;
@@ -54,46 +58,6 @@ public class ProblemDetailVO {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getSampleInput() {
-        return sampleInput;
-    }
-
-    public void setSampleInput(String sampleInput) {
-        this.sampleInput = sampleInput;
-    }
-
-    public String getSampleOutput() {
-        return sampleOutput;
-    }
-
-    public void setSampleOutput(String sampleOutput) {
-        this.sampleOutput = sampleOutput;
-    }
-
-    public String getHint() {
-        return hint;
-    }
-
-    public void setHint(String hint) {
-        this.hint = hint;
-    }
-
-    public Date getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
     }
 
     public Byte getDifficulty() {
@@ -120,6 +84,14 @@ public class ProblemDetailVO {
         this.accepted = accepted;
     }
 
+    public Byte getStatus() {
+        return status;
+    }
+
+    public void setStatus(Byte status) {
+        this.status = status;
+    }
+
     public List<ProblemTagVO> getTag() {
         return tag;
     }
@@ -136,11 +108,4 @@ public class ProblemDetailVO {
         this.problemClass = problemClass;
     }
 
-    public List<CurrentProblemLimitVO> getLimit() {
-        return limit;
-    }
-
-    public void setLimit(List<CurrentProblemLimitVO> limit) {
-        this.limit = limit;
-    }
 }

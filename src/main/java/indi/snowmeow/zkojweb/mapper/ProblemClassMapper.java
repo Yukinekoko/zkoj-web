@@ -6,7 +6,6 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -53,20 +52,20 @@ public interface ProblemClassMapper {
      *  新增分组信息
      * @return 数据影响行数
      */
-    public int insertProblemClass(ProblemClass problemClass);
+    int save(ProblemClassPO problemClass);
 
     /**
      *  查看是否已经存在同名同描述的标签
      * @param name
      * @return ProblemClass
      */
-    public ProblemClass getProblemClassByName(String name);
+    ProblemClassPO getFromName(String name);
 
     /**
      * 修改分组信息
      * @param problemClass
      */
-    public int updateProblemClass(ProblemClass problemClass);
+    int update(ProblemClassPO problemClass);
 
-    public int deleteProblemClass(Long classId);
+    public int delete(Long classId);
 }

@@ -249,7 +249,7 @@
         limit #{offset},#{limit}
     </select>
     <!-- 获取问题详细 -->
-    <select id="getProblemDetail" resultMap="ProblemResultMap">
+    <select id="get" resultMap="ProblemResultMap">
         select id, title, description, sample_input, sample_output, hint, create_date, difficulty, class_id
         from problem
         where id = #{problem_id}
@@ -313,36 +313,35 @@
         where problem_id = #{problem_id}
           and user_id = #{user_id};
     </select>
-    <update id="updateProblemInfo" parameterType="Problem">
-
+    <update id="update">
         update problem
         <set>
-            <if test="title !=null">
-                title =#{title},
+            <if test="title != null">
+                title = #{title},
             </if>
-            <if test="description !=null">
-                description =#{description},
+            <if test="description != null">
+                description = #{description},
             </if>
-            <if test="sampleInput !=null">
-                sample_input =#{sampleInput},
+            <if test="sampleInput != null">
+                sample_input = #{sampleInput},
             </if>
-            <if test="sampleOutput !=null">
-                sample_output =#{sampleOutput},
+            <if test="sampleOutput != null">
+                sample_output = #{sampleOutput},
             </if>
-            <if test="hint !=null">
-                hint =#{hint},
+            <if test="hint != null">
+                hint = #{hint},
             </if>
-            <if test="classId !=null">
-                class_id =${classId},
+            <if test="problemClass != null">
+                class_id = #{problemClass},
             </if>
-            <if test="isPrivate !=null">
-                is_private =${isPrivate},
+            <if test="problemPrivate != null">
+                is_private = #{problemPrivate},
             </if>
-            <if test="difficulty !=null">
-                difficulty = ${difficulty},
+            <if test="difficulty != null">
+                difficulty = #{difficulty},
             </if>
         </set>
-            where id = ${id}
+            where id = #{id}
     </update>
 
 </mapper>

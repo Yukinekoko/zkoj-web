@@ -15,7 +15,7 @@ import indi.snowmeow.zkojweb.util.BaseBody;
 import indi.snowmeow.zkojweb.util.JwtUtil;
 import indi.snowmeow.zkojweb.util.ListCopyUtil;
 import indi.snowmeow.zkojweb.util.ZipFileUtil;
-import indi.snowmeow.zkojweb.vo.*;
+import indi.snowmeow.zkojweb.model.vo.*;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.BeanUtils;
@@ -57,6 +57,8 @@ public class ProblemServiceImpl implements ProblemService {
     CheckPointMapper checkPointMapper;
     @Autowired
     SolutionMapper solutionMapper;
+    @Autowired
+    ProblemTagMappingMapper problemTagMappingMapper;
 
     @Override
     public ProblemListVO list(ProblemListRequestDTO requestDTO) {
@@ -113,7 +115,7 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     @Override
-    public int count(ProblemCountDTO requestDTO) {
+    public int countByPublic(ProblemCountDTO requestDTO) {
         return problemMapper.count(requestDTO.getDifficulty(), requestDTO.getTagId(),
                 requestDTO.getTagId(), null, null);
     }
@@ -122,7 +124,7 @@ public class ProblemServiceImpl implements ProblemService {
     public ProblemDetailVO getProblemDetail(long problemId) {
         ProblemDetailVO result = new ProblemDetailVO();
 
-        ProblemPO problem = problemMapper.getProblemDetail(problemId);
+        ProblemPO problem = problemMapper.get(problemId);
         if(problem == null) {
             return null;
         }
@@ -193,79 +195,9 @@ public class ProblemServiceImpl implements ProblemService {
         problemList = sort(problemList,sortType);
         return problemList;
     }
-    /**
-     *  新增算法标签
-     * @param problemTag - 算法标签对象
-     * @return 数据影响行数
-     */
-    @Override
-    public int insertTag(ProblemTag problemTag) {
-        return problemTagMapper.insertTag(problemTag);
-    }
-    /**
-     *  新增问题分组
-     * @param problemClass - 问题分组对象
-     * @return 数据影响行数
-     */
-    @Override
-    public int insertProblemClass(ProblemClass problemClass) {
-        return problemClassMapper.insertProblemClass(problemClass);
-    }
 
-    @Override
-    public ProblemTag getTagByName(String name) {
-        return problemTagMapper.getTagByName(name);
-    }
-
-    @Override
-    public ProblemClass getProblemClassByName(String name) {
-        return problemClassMapper.getProblemClassByName(name);
-    }
-
-    /**
-     * 修改分组信息
-     * @param problemClass
-     */
-    @Override
-    public int updateProblemClass(ProblemClass problemClass) {
-        return problemClassMapper.updateProblemClass(problemClass);
-    }
-    /**
-     *
-     * 修改算法标签信息
-     * @param problemTag
-     */
-    @Override
-    public int updateProblemTag(ProblemTag problemTag) {
-        return problemTagMapper.updateProblemTag(problemTag);
-    }
-
-    /**
-     * 增加问题
-     * @param problem
-     * @return 数据影响行数
-    */
-    @Override
-    public int insertProblem(Problem problem) {
-        return problemMapper.insertProblem(problem);
-    }
-    /**
-     * 根据id获取指定分类对象
-     * @param id - class_id
-     * @return 指定分类对象
-     * */
-    @Override
-    public ProblemClass getClassFromId(long id) {
-        return problemClassMapper.getClassFromId(id);
-    }
-    /**
-     * 根据id 获取指定标签对象
-     * @param id - tag_id
-     * @return 指定标签对象
-     */
-    @Override
-    public ProblemTag getTagById(Long id) {
-        return problemTagMapper.getTagById(id);
+    public ProblemTagPO getTagByName(String name) {
+        return problemTagMapper.getFromName(name);
     }
 
     @Override
@@ -335,14 +267,14 @@ public class ProblemServiceImpl implements ProblemService {
                 }
                 //获取tag list 可以为null
                 List<Integer> tagIdList = (List<Integer>)problemDataMap.get("tag");
-                List<ProblemTag> problemTagList = new ArrayList<ProblemTag>();
+                List<ProblemTagPO> problemTagList = new ArrayList<>();
                 if (tagIdList != null) {
                     int i =0;
                     for (Integer tagId : tagIdList) {
                         i++;
-                        ProblemTag problemTag = new ProblemTag();
+                        ProblemTagPO problemTag;
                         Long tagid = tagId.longValue();
-                        problemTag = problemTagMapper.getTagById(tagid);
+                        problemTag = problemTagMapper.getFromId(tagid);
                         if (problemTag==null){
                             //标签不存在
                             throw new ParamErrorException("Tag " + i + "Not Exists");
@@ -571,171 +503,50 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     @Override
-    public int insertProblemTag(Long problemId, Long tagId) {
-        return problemTagMapper.insertProblemTag(problemId, tagId);
-    }
-
-    @Override
-    public int insertProblemLimit(Long problemId, Long languageId, Integer memory, Integer time) {
-        return problemLimitMapper.insertProblemLimit(problemId, languageId, memory,time);
-    }
-
-    @Override
-    public int insertSourceCode(Long problemId, String sourceCode, Long languageId) {
-        return problemMapper.insertSourceCode(problemId, sourceCode, languageId);
-    }
-
-    @Override
-    public int insertCheckPoint(Long problemId, String input, String output) {
-        return checkPointMapper.insertCheckPoint(problemId, input, output);
-    }
-
-    @Override
-    public Problem getProblemById(Long problemId) {
-        return problemMapper.getProblemById(problemId);
-    }
-
-    @Override
-    public int updateProblemTagList(Long[] tagIds, Long problemId) {
-        //执行删除
-        int delete = problemTagMapper.deleteProblemTagList(problemId);
-
-        int insert=0;
-        for (Long tagId : tagIds) {
-            insert = problemTagMapper.insertProblemTagList(tagId,problemId);
-            if (insert<1){return -1;}
+    @Transactional
+    public boolean update(ProblemUpdateDTO requestDTO) {
+        boolean resultBase = updateBaseDate(requestDTO);
+        if(!resultBase) {
+            return false;
         }
-
-
-        return insert;
+        return updateTagList(requestDTO);
     }
 
-    @Override
-    public int updateProblemInfo(Map<String, Object> problemMap) {
-        return problemMapper.updateProblemInfo(problemMap);
-    }
-
-    @Override
-    public int deleteProblemTag(Long tagId) {
-        return problemTagMapper.deleteProblemTag(tagId);
-    }
-
-    @Override
-    public int deleteProblemClass(Long classId) {
-        return problemClassMapper.deleteProblemClass(classId);
-    }
-
-    @Override
-    @Transactional()
-    public Object updateProblemCheckPoint(Long problemId, MultipartFile file, String checkPointString) {
-
-        if (file == null &&checkPointString==null)
-            return BaseBody.fail("PLEASE SUBMIT CHECK POINT DATA");
-
-        if (file!=null && checkPointString !=null)
-            return BaseBody.fail("SELECT ONLY ONE KIND OF DATA TO SUBMIT");
-        BaseBody body = new BaseBody();
-
-
-        //执行对problem 的checkpoint 删除
-        checkPointMapper.deleteCheckPoint(problemId);
-        //zip 压缩包格式上传
-        if (file != null  ){
-            if (file.isEmpty()){
-                return BaseBody.fail("ZIP IS EMPTY");
+    /**
+     * 更新指定问题的Tag
+     * */
+    protected  boolean updateTagList(ProblemUpdateDTO requestDTO) {
+        if (null != requestDTO.getTag()) {
+            problemTagMappingMapper.deleteFromProblemId(requestDTO.getId());
+            if (problemTagMappingMapper.saveList(requestDTO.getId(), requestDTO.getTag()) == 0) {
+                return false;
             }
-            //再执行插入
-            File f = null;
-            try {
-                f=File.createTempFile("tmp", null);
-                file.transferTo(f);
-            }
-            catch (IOException e) {
-                f.delete();
-                throw new ParamErrorException("Check Point File Error.");
-            }
-            ZipFileUtil zipFile = new ZipFileUtil(f);
-            if (!zipFile.isZip()){
-                f.delete();
-                throw new ParamErrorException("Check Point File Is Not A ZIP.");
-            }
-            if (zipFile.isEncrypted()){
-                f.delete();
-                throw new ParamErrorException("Check Point File Error.");
-            }
-            if (zipFile.isLegal()){
-                Map<String, String> files= zipFile.readFiles();
-                ArrayList<String> inputNames = zipFile.getInputNames();
-                ArrayList<String> outputNames = zipFile.getOutputNames();
-                String input = "";
-                String output = "";
-                for (int j = 0; j < inputNames.size(); j++) {
-                    String inputName = inputNames.get(j);
-                    //检验输入输出的文件数字是否匹配 input_1 对 output_1
-                    String inputNumber = inputName.substring(6,inputName.length() );
-                    for (int i = 0; i < outputNames.size(); i++){
-                        String name = outputNames.get(i);
-                        String number = name.substring(7,name.length() );
-                        if (number.equals(inputNumber)){
-                            input = files.get(inputName);
-                            System.out.println(inputName+"："+input);
-                            output = files.get(name);
-                            System.out.println(name +"："+output);
-                            int PUTisSuccess = checkPointMapper.insertCheckPoint(problemId,input,output);
-                            if (PUTisSuccess<1){
-                                f.delete();
-                                throw new ParamErrorException("Unknown Error.");
-                            }
-                            outputNames.remove(i);
-                            break;
-                        }
-                    }
-                }
-                for (int i =0;i<outputNames.size(); i++){
-                    //Sql 插入数据库
-                    output = files.get(outputNames.get(i));
-                    int PUTisSuccess = checkPointMapper.insertCheckPoint(problemId,input,output);
-                    if (PUTisSuccess<1){
-                        f.delete();
-                        throw new ParamErrorException("Unknown Error.");
-                    }
-                    System.out.println(outputNames.get(i));
-                }
-
-            }
-            f.delete();
-            body.setStatus(1);
-            body.setMessage("Success");
-            return body;
         }
-        //对json格式的更新
-        if (checkPointString !=null) {
-            ObjectMapper objectMapper = new ObjectMapper();
-            List<Map<String, Object>> sampleList = null;
-            try {
-                sampleList = objectMapper.readValue(checkPointString, new TypeReference<List<Map<String, Object>>>() {
-                });
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
-            int i = 1;
-            for (Map<String, Object> samples : sampleList) {
-                String input = (String) samples.get("input");
-                String output = (String) samples.get("output");
-                System.out.println("input : " + input + "\n" + "output : " + output);
-                //input 可以为空 output不可以为空
-                if (output == null) {
-                    throw new ParamErrorException("Output" + i + "Is Null");
-                }
-                i++;
-                checkPointMapper.insertCheckPoint(problemId, input, output);
-            }
-            body.setStatus(1);
-            body.setMessage("Success");
-            return body;
+        return true;
+    }
+    /**
+     * 更新指定问题的基本信息（除去Tag）
+     * */
+    protected boolean updateBaseDate(ProblemUpdateDTO requestDTO) {
+        if(!haveUpdateBaseDate(requestDTO)) {
+            return true;
         }
-
-        return BaseBody.fail("Fail");
+        return problemMapper.update(requestDTO) != 0;
+    }
+    /**
+     * 检测ProblemUpdateDTO中是否至少存在一个基本信息
+     * */
+    protected boolean haveUpdateBaseDate(ProblemUpdateDTO requestDTO) {
+        if (null != requestDTO.getDescription() ||
+                null != requestDTO.getTitle() ||
+                null != requestDTO.getSampleInput() ||
+                null != requestDTO.getSampleOutput() ||
+                null != requestDTO.getHint() ||
+                null != requestDTO.getProblemClass() ||
+                null != requestDTO.getProblemPrivate()) {
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -770,10 +581,14 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     @Override
-    public List<Map<String, Object>> getProblemCheckPoint(Long problemId) {
-        return checkPointMapper.getProblemCheckPoint(problemId);
+    public List<ProblemAdminPreviewVO> getAdminPreviewList(ProblemAdminPreviewDTO requestDTO) {
+        return null;
     }
 
+    @Override
+    public int count(ProblemAdminPreviewDTO requestDTO) {
+        return 0;
+    }
 
     /**
      *  查询问题列表的排序方法

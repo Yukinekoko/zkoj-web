@@ -2,6 +2,7 @@ package indi.snowmeow.zkojweb.mapper;
 
 import indi.snowmeow.zkojweb.model.dto.ProblemListRequestDTO;
 import indi.snowmeow.zkojweb.model.Problem;
+import indi.snowmeow.zkojweb.model.dto.ProblemUpdateDTO;
 import indi.snowmeow.zkojweb.po.ProblemPO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -32,7 +33,7 @@ public interface ProblemMapper {
     /**
      * 获取问题详情
      */
-    ProblemPO getProblemDetail(@Param("problem_id")long problemId);
+    ProblemPO get(@Param("problem_id")long problemId);
     /**
      * 获取问题列表
      * @param requestDTO - 请求DTO
@@ -103,13 +104,13 @@ public interface ProblemMapper {
      * @return 数据影响行数
      *
      */
-     int insertProblem(Problem problem);
+    int insertProblem(Problem problem);
 
     int insertSourceCode(Long problemId,String sourceCode , Long languageId);
 
     Problem getProblemById(Long problemId);
 
-     int updateProblemInfo(Map<String, Object> problemMap);
+    int update(ProblemUpdateDTO requestDTO);
 
     int countProblemByConditions(@Param("difficulty")Byte difficulty,
                                         @Param("class_id")Long classId,

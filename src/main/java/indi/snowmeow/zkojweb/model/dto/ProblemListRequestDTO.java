@@ -6,7 +6,6 @@ package indi.snowmeow.zkojweb.model.dto;
  */
 public class ProblemListRequestDTO {
 
-    // TODO 是否可以设置默认值？
     /** 页码 */
     private Integer page;
     /** 每页数量 */

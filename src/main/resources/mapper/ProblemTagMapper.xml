@@ -31,14 +31,14 @@
         insert into problem_tag_mapping (problem_id , tag_id) values (${problemId},${tagId})
     </insert>
     <!-- 获取算法标签 by id-->
-    <select id="getTagById" resultType="ProblemTag">
-        select * from problem_tag where id = #{id}
+    <select id="getFromId" resultType="ProblemTag">
+        select id, name from problem_tag where id = #{id}
     </select>
-    <select id="getTagByName" resultType="ProblemTag">
-        select * from problem_tag where name = #{name}
+    <select id="getFromName" resultType="ProblemTagPO">
+        select id, name from problem_tag where name = #{name}
     </select>
     <!-- 修改指定标签名 -->
-    <update id="updateProblemTag">
+    <update id="update">
         update problem_tag set name = #{name} where id =#{id}
     </update>
     <!-- 获取指定问题的Tag列表 -->
@@ -55,11 +55,8 @@
         from problem_tag_mapping
         where tag_id = #{tag_id};
     </select>
-    <insert id="insertTag" >
+    <insert id="save" useGeneratedKeys="true" keyProperty="id">
         insert into problem_tag (name) values (#{name});
-        <selectKey resultType="Long" keyProperty="id" order="AFTER">
-            select @@IDENTITY
-        </selectKey>
     </insert>
     <insert id="insertProblemTagList">
         insert into problem_tag_mapping
@@ -67,10 +64,7 @@
         values
         (${problemId},${tagId})
     </insert>
-    <delete id="deleteProblemTagList">
-        delete from problem_tag_mapping where problem_id =${problemId}
-    </delete>
-    <delete id="deleteProblemTag">
-        delete from problem_tag where id = ${id}
+    <delete id="delete">
+        delete from problem_tag where id = #{id}
     </delete>
 </mapper>
