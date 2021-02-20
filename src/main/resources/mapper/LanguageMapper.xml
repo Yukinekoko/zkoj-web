@@ -3,10 +3,10 @@
 
 <mapper namespace="indi.snowmeow.zkojweb.mapper.LanguageMapper">
 
-    <select id="findById" resultType="Language">
+    <select id="findById" resultType="LanguagePO">
         select * from language where id=#{id} limit 1
     </select>
-    <select id="getLanguageList" resultType="Language">
-        select * from language
+    <select id="list" resultType="LanguagePO">
+        select id, name from language
     </select>
 </mapper>

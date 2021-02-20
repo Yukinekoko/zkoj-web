@@ -2,6 +2,7 @@ package indi.snowmeow.zkojweb.model;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import indi.snowmeow.zkojweb.po.LanguagePO;
 
 /**
  * 通过消息队列传递给判题机的评测信息对象
@@ -18,7 +19,7 @@ public class RequestSolution {
     /** 代码 */
     private String sourceCode;
     /** 语言对象 */
-    private Language language;
+    private LanguagePO language;
     /** 耗时限制 */
     private Integer time;
     /** 内存限制 */
@@ -48,11 +49,11 @@ public class RequestSolution {
         this.sourceCode = sourceCode;
     }
 
-    public Language getLanguage() {
+    public LanguagePO getLanguage() {
         return language;
     }
 
-    public void setLanguage(Language language) {
+    public void setLanguage(LanguagePO language) {
         this.language = language;
     }
 

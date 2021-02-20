@@ -23,9 +23,8 @@
     </select>
 
     <!--获取所有算法标签信息-->
-    <select id="getTagList" resultMap="ProblemTagResultMap">
-        select * from problem_tag
-
+    <select id="list" resultMap="ProblemTagPOResultMap">
+        select id, name from problem_tag
     </select>
     <!-- 插入problem_tag_mapping-->
     <insert id="insertProblemTag">

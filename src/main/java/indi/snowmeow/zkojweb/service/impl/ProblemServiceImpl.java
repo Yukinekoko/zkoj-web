@@ -5,14 +5,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import indi.snowmeow.zkojweb.dto.ProblemListRequestDTO;
+import indi.snowmeow.zkojweb.model.dto.*;
 import indi.snowmeow.zkojweb.exception.ParamErrorException;
 import indi.snowmeow.zkojweb.mapper.*;
 import indi.snowmeow.zkojweb.model.*;
-import indi.snowmeow.zkojweb.po.ProblemClassPO;
-import indi.snowmeow.zkojweb.po.ProblemLimitPO;
-import indi.snowmeow.zkojweb.po.ProblemPO;
-import indi.snowmeow.zkojweb.po.ProblemTagPO;
+import indi.snowmeow.zkojweb.po.*;
 import indi.snowmeow.zkojweb.service.ProblemService;
 import indi.snowmeow.zkojweb.util.BaseBody;
 import indi.snowmeow.zkojweb.util.JwtUtil;
@@ -116,16 +113,9 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     @Override
-    public int getCount(Byte difficulty, Long tagId, Long classId, String searchText) {
-        if(searchText != null) {
-            try {
-                Integer.parseInt(searchText);
-                return problemMapper.count(difficulty, tagId, classId, searchText, true);
-            } catch (NumberFormatException e) {
-                return problemMapper.count(difficulty, tagId, classId, searchText, false);
-            }
-        }
-        return problemMapper.count(difficulty, tagId, classId, null, null);
+    public int count(ProblemCountDTO requestDTO) {
+        return problemMapper.count(requestDTO.getDifficulty(), requestDTO.getTagId(),
+                requestDTO.getTagId(), null, null);
     }
 
     @Override
@@ -133,6 +123,9 @@ public class ProblemServiceImpl implements ProblemService {
         ProblemDetailVO result = new ProblemDetailVO();
 
         ProblemPO problem = problemMapper.getProblemDetail(problemId);
+        if(problem == null) {
+            return null;
+        }
         BeanUtils.copyProperties(problem, result);
 
         int submitCount = solutionMapper.countSubmitFromProblemId(problemId);
@@ -161,16 +154,6 @@ public class ProblemServiceImpl implements ProblemService {
         }
 
         return result;
-    }
-
-    @Override
-    public List<ProblemTag> getTagList() {
-        return problemTagMapper.getTagList();
-    }
-
-    @Override
-    public List<Map<String, Object>> getClassesInfo() {
-        return problemClassMapper.getClassesInfo();
     }
 
     @Override
@@ -286,11 +269,6 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     @Override
-    public List<Language> getLanguageList() {
-        return languageMapper.getLanguageList();
-    }
-
-    @Override
     @Transactional()
     public Object insertProblem(MultipartFile file, String problemDataString, String checkPointString) {
 
@@ -401,7 +379,7 @@ public class ProblemServiceImpl implements ProblemService {
                     Map<String, Object> limit = limitList.get(i);
                     Integer b  = (Integer) limit.get("language_id");
                     Long languageId = b.longValue();
-                    Language language = languageMapper.findById(languageId);
+                    LanguagePO language = languageMapper.findById(languageId);
                     if (language == null) {
                         throw new ParamErrorException("Language " + i + "Not Exists");
                     }
@@ -468,7 +446,7 @@ public class ProblemServiceImpl implements ProblemService {
                         Map<String, Object> sc = sourceCode.get(i);
                         Integer c = (Integer) sc.get("language_id");
                         Long languageId  = c.longValue();
-                        Language language = languageMapper.findById(languageId);
+                        LanguagePO language = languageMapper.findById(languageId);
                         if (language == null) {
                             throw new ParamErrorException("Language " + i + " Not Exists");
                         }

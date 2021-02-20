@@ -2,9 +2,9 @@ package indi.snowmeow.zkojweb.model;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import indi.snowmeow.zkojweb.po.LanguagePO;
 
 import java.util.Date;
-import java.util.Stack;
 
 /**
  * Solution对象
@@ -25,7 +25,7 @@ public class Solution {
     /** 评测状态ID */
     private Byte statusId;
     /** 语言 */
-    private Language language;
+    private LanguagePO language;
     /** 关联问题 */
     private Problem problem;
     /** 提交用户 */
@@ -98,11 +98,11 @@ public class Solution {
         this.statusId = statusId;
     }
 
-    public Language getLanguage() {
+    public LanguagePO getLanguage() {
         return language;
     }
 
-    public void setLanguage(Language language) {
+    public void setLanguage(LanguagePO language) {
         this.language = language;
     }
 }

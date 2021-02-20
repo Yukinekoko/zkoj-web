@@ -2,6 +2,7 @@ package indi.snowmeow.zkojweb.model;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import indi.snowmeow.zkojweb.po.LanguagePO;
 
 /**
  * 对应solution_source_code表
@@ -18,17 +19,17 @@ public class SolutionSourceCode {
     /** 源代码 */
     private String sourceCode;
     /** 语言对象 */
-    private Language language;
+    private LanguagePO language;
 
     public void setId(Long id) {
         this.id = id;
     }
 
-    public Language getLanguage() {
+    public LanguagePO getLanguage() {
         return language;
     }
 
-    public void setLanguage(Language language) {
+    public void setLanguage(LanguagePO language) {
         this.language = language;
     }
 

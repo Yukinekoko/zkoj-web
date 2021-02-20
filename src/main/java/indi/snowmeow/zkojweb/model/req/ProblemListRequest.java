@@ -1,6 +1,4 @@
-package indi.snowmeow.zkojweb.dto;
-
-import org.apache.ibatis.annotations.Param;
+package indi.snowmeow.zkojweb.model.req;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -8,58 +6,35 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
+ * 换取问题列表接口参数DTO
  * @author snowmeow
  * @date 2021/2/14
  */
-public class ProblemListRequestDTO {
+public class ProblemListRequest {
 
     // TODO 是否可以设置默认值？
     /** 页码 */
+    @NotNull
+    @Min(1)
     private Integer page;
     /** 每页数量 */
+    @NotNull
+    @Min(1)
+    @Max(100)
     private Integer limit;
     /** 难度筛选 */
+    @Min(1)
+    @Max(3)
     private Byte difficulty;
     /** 分组筛选 */
+    @Min(0)
     private Long classId;
     /** 标签筛选 */
+    @Min(0)
     private Long tagId;
     /** 搜索关键字 */
-    private String searchText;
-    /** 偏移值 */
-    private Integer offset;
-    /** 用户ID */
-    private Long userId;
-
-    @Override
-    public String toString() {
-        return "ProblemListRequestDTO{" +
-                "page=" + page +
-                ", limit=" + limit +
-                ", difficulty=" + difficulty +
-                ", classId=" + classId +
-                ", tagId=" + tagId +
-                ", searchText='" + searchText + '\'' +
-                ", offset=" + offset +
-                ", userId=" + userId +
-                '}';
-    }
-
-    public Integer getOffset() {
-        return offset;
-    }
-
-    public void setOffset(Integer offset) {
-        this.offset = offset;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
+    @Size(min = 1, max = 20)
+    private String search;
 
     public Integer getPage() {
         return page;
@@ -101,11 +76,11 @@ public class ProblemListRequestDTO {
         this.tagId = tagId;
     }
 
-    public String getSearchText() {
-        return searchText;
+    public String getSearch() {
+        return search;
     }
 
-    public void setSearchText(String searchText) {
-        this.searchText = searchText;
+    public void setSearch(String search) {
+        this.search = search;
     }
 }

@@ -1,22 +1,17 @@
 package indi.snowmeow.zkojweb.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import indi.snowmeow.zkojweb.dto.ProblemListRequestDTO;
-import indi.snowmeow.zkojweb.req.ProblemListRequest;
+import indi.snowmeow.zkojweb.model.dto.*;
+import indi.snowmeow.zkojweb.model.req.*;
 import indi.snowmeow.zkojweb.model.*;
 import indi.snowmeow.zkojweb.service.impl.ProblemServiceImpl;
 import indi.snowmeow.zkojweb.service.impl.UserServiceImpl;
 import indi.snowmeow.zkojweb.util.BaseBody;
-import indi.snowmeow.zkojweb.util.JwtUtil;
 import indi.snowmeow.zkojweb.util.SubjectUtils;
 import indi.snowmeow.zkojweb.vo.ProblemDetailVO;
 import indi.snowmeow.zkojweb.vo.ProblemListVO;
-import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
-import org.apache.shiro.subject.Subject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -26,7 +21,6 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.Size;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,11 +29,9 @@ import java.util.Map;
  * @author snowmeow
  * @date 2020/10/19
  */
-@Validated
 @RestController
 public class ProblemController {
 
-    final static private Logger LOGGER = LoggerFactory.getLogger(ProblemController.class);
     @Autowired
     ProblemServiceImpl problemService;
     @Autowired
@@ -62,42 +54,15 @@ public class ProblemController {
 
     /**
      * 获取文章总数
-     * @param difficulty - 筛选难度
-     * @param classId - 筛选分类
-     * @param tagId - 筛选标签
      * */
     @GetMapping("/problem/count")
-    public Object getProblemCount(@RequestParam(required = false) Byte difficulty,
-                                  @RequestParam(name = "tag_id", required = false) Long tagId,
-                                  @RequestParam(name = "class_id", required = false) Long classId) {
-
-        if(difficulty != null && (difficulty > 3 || difficulty <= 0)) {
-            return BaseBody.fail("Param Error");
-        }
-
-        int count = problemService.getCount(difficulty, tagId, classId, null);
-
-        BaseBody<Integer> body = new BaseBody<>();
-        body.setStatus(1);
-        body.setMessage("Success");
-        body.setData(count);
-
-        return body;
-
+    public Object getProblemCount(@Valid @ModelAttribute ProblemCountRequest request) {
+        ProblemCountDTO requestDTO = new ProblemCountDTO();
+        BeanUtils.copyProperties(request, requestDTO);
+        int count = problemService.count(requestDTO);
+        return BaseBody.success(count);
     }
-    /**
-     * 获取语言列表
-     * @return List<Language></>
-     */
-    @GetMapping("/language")
-    public Object getLanguageList(){
-        BaseBody<List<Language>> body  = new BaseBody<> ();
-        List<Language> languages = problemService.getLanguageList();
-        body.setData(languages);
-        body.setMessage("Success");
-        body.setStatus(1);
-        return body;
-    }
+
     /**
      * 获取问题详细
      * @param problemId 问题ID
@@ -105,54 +70,11 @@ public class ProblemController {
     @GetMapping("/problem/{problem_id}")
     public Object getProblemDetail(@PathVariable(name = "problem_id") Long problemId){
         ProblemDetailVO problem = problemService.getProblemDetail(problemId);
-        BaseBody<ProblemDetailVO> body = new BaseBody<> ();
-        body.setStatus(1);
-        body.setMessage("Success");
-        body.setData(problem);
-        return body;
+        return BaseBody.success(problem);
     }
-    /**
-     * 获取所有算法标签信息
-     * @return List<ProblemTag></>
-     */
-        @GetMapping("/tag")
-        public Object getTagList(){
-            List<ProblemTag> problemTag = problemService.getTagList();
-            BaseBody<List<ProblemTag>> body = new BaseBody<>();
-            body.setStatus(1);
-            body.setMessage("Success");
-            body.setData(problemTag);
-            return body;
-        }
 
-    /**
-     *  获取所有分类信息
-     * @return 分类信息 Map
-      */
-    @GetMapping("/class")
-    public Object getClassesInfo(){
-        List<Map<String, Object>> classInfoList = problemService.getClassesInfo();
-        for (int i = 0;i < classInfoList.size(); i++) {
-            Map<String, Object> classInfo = classInfoList.get(i);
-            Object count = classInfo.get("count");
-            String a = String.valueOf(count);
-            // a = "[2]" 消除前后两个中括号
-            String number = a.substring(1, a.length() - 1);
-            //如果已经存在这个键值，会直接覆盖掉。
-            classInfo.put("count", number);
-        }
-        BaseBody<List<Map<String, Object>>> body = new BaseBody<> ();
-        body.setStatus(1);
-        body.setMessage("Success");
-        body.setData(classInfoList);
-        return body;
-
-    }
     /**
      *  修改问题内容
-     * @param requestBody
-     * @return body
-     *
      */
     @RequiresRoles(value = {"SUPER_ADMIN","ADMIN"}, logical = Logical.OR)
     @PutMapping("/problem")

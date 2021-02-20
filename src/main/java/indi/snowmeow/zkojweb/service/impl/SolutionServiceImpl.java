@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import indi.snowmeow.zkojweb.mapper.*;
 import indi.snowmeow.zkojweb.messenger.MessageSender;
 import indi.snowmeow.zkojweb.model.*;
+import indi.snowmeow.zkojweb.po.LanguagePO;
 import indi.snowmeow.zkojweb.service.SolutionService;
 import indi.snowmeow.zkojweb.util.JmsResultUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,7 +74,7 @@ public class SolutionServiceImpl implements SolutionService {
 
         // 获取判题需要的一些信息
         // 1. 语言对象
-        Language language = languageMapper.findById(languageId);
+        LanguagePO language = languageMapper.findById(languageId);
         /*// 2. 测试点
         List<CheckPoint> checkPointList = checkPointMapper.findListByProblemId(problemId);*/
         // 3. 限制信息

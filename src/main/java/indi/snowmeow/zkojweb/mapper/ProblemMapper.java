@@ -1,6 +1,6 @@
 package indi.snowmeow.zkojweb.mapper;
 
-import indi.snowmeow.zkojweb.dto.ProblemListRequestDTO;
+import indi.snowmeow.zkojweb.model.dto.ProblemListRequestDTO;
 import indi.snowmeow.zkojweb.model.Problem;
 import indi.snowmeow.zkojweb.po.ProblemPO;
 import org.apache.ibatis.annotations.Mapper;

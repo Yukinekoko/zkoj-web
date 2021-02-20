@@ -1,12 +1,8 @@
 package indi.snowmeow.zkojweb.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import indi.snowmeow.zkojweb.messenger.MessageSender;
-import indi.snowmeow.zkojweb.model.Language;
-import indi.snowmeow.zkojweb.model.Problem;
 import indi.snowmeow.zkojweb.model.Solution;
-import indi.snowmeow.zkojweb.service.UserService;
 import indi.snowmeow.zkojweb.service.impl.SolutionServiceImpl;
 import indi.snowmeow.zkojweb.service.impl.UserServiceImpl;
 import indi.snowmeow.zkojweb.util.BaseBody;
@@ -15,7 +11,6 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 

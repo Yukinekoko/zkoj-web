@@ -8,9 +8,8 @@
         <result property="id" column="id"/>
         <result property="name" column="name"/>
         <result property="description" column="description"/>
-        <association property="count" column="id"
-                     select="indi.snowmeow.zkojweb.mapper.ProblemMapper.countProblemFromClassId"></association>
     </resultMap>
+
 
     <!-- 根据id获取对应的class -->
     <select id="getFromId" resultType="ProblemClassPO">
@@ -20,10 +19,10 @@
     </select>
 
     <!-- 获取所有分类信息 -->
-    <select id="getClassesInfo" resultMap="ProblemClassResultMap">
-        select * from problem_class
-
+    <select id="list" resultType="ProblemClassPO">
+        select id, name, description from problem_class
     </select>
+
     <!-- 根据名字和描述获取分组信息-->
     <select id="getProblemClassByName" resultType="ProblemClass">
         select * from problem_class where name = #{name}

@@ -37,7 +37,7 @@ public interface ProblemTagMapper {
      * 获取所有算法标签信息
      * @return 算法标签对象
      */
-    public  List<ProblemTag> getTagList();
+    List<ProblemTagPO> list();
 
     public int insertTag(ProblemTag problemTag);
 

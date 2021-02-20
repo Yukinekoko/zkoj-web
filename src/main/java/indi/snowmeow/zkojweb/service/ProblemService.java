@@ -1,13 +1,11 @@
 package indi.snowmeow.zkojweb.service;
 
-import indi.snowmeow.zkojweb.dto.ProblemListRequestDTO;
-import indi.snowmeow.zkojweb.model.Language;
+import indi.snowmeow.zkojweb.model.dto.*;
 import indi.snowmeow.zkojweb.model.Problem;
 import indi.snowmeow.zkojweb.model.ProblemClass;
 import indi.snowmeow.zkojweb.model.ProblemTag;
 import indi.snowmeow.zkojweb.vo.ProblemDetailVO;
 import indi.snowmeow.zkojweb.vo.ProblemListVO;
-import indi.snowmeow.zkojweb.vo.ProblemPreviewVO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,30 +26,16 @@ public interface ProblemService {
 
     /**
      * 获取问题总数
-     * @param difficulty - 筛选难度
-     * @param tagId - 筛选算法标签ID
-     * @param classId - 筛选分类ID
-     * @param searchText - 搜索关键字
      * @return 问题总数
      * */
-    public int getCount(Byte difficulty, Long tagId, Long classId,
-                        String searchText);
+    int count(ProblemCountDTO requestDTO);
     /**
      * 获取问题的详情
      * @param problemId - 问题ID
      * @return 问题详细对象
      */
     public ProblemDetailVO getProblemDetail(long problemId);
-    /**
-     *  获取所有算法标签信息
-     * @return 算法标签对象
-     */
-    public List<ProblemTag> getTagList();
-    /**
-     * 获取所有分类信息
-     * @return 分类信息 map
-     */
-    public List<Map<String,Object>> getClassesInfo();
+
     /**
      * 根据关键字查询题目
      * @param search -关键字
@@ -133,11 +117,6 @@ public interface ProblemService {
      * @return 指定标签对象
      */
     public ProblemTag getTagById(Long id);
-    /**
-     * 获取语言列表
-     * @return List<Language></
-     */
-    public List<Language> getLanguageList();
 
     public Object insertProblem(MultipartFile file,String problemDataString,String checkPointString);
 

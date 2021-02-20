@@ -1,6 +1,6 @@
 package indi.snowmeow.zkojweb.mapper;
 
-import indi.snowmeow.zkojweb.model.Language;
+import indi.snowmeow.zkojweb.po.LanguagePO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -19,10 +19,9 @@ public interface LanguageMapper {
      * @param id 语言id
      * @return language对象
      * */
-    Language findById(@Param("id") Long id);
+    LanguagePO findById(@Param("id") Long id);
     /**
      * 获取语言列表
-     * @return List<Language></
      */
-    public List<Language> getLanguageList();
+    List<LanguagePO> list();
 }

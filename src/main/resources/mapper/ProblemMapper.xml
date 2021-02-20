@@ -187,36 +187,8 @@
         </where>
         limit #{offset},#{limit}
     </select>
-    <!-- 根据分类信息获取题目数量 -->
-    <select id="countProblemFromClassId" resultType="int">
-        select count(id) as count from problem where class_id = #{classId}
-    </select>
 
     <!-- 获取问题列表 -->
-    <!--<select id="list" resultMap="ProblemPreviewResultMap">
-        select problem.title, problem.difficulty, problem.class_id, problem.id
-        <choose>
-                <when test="user_id != null">,#{user_id} as user_id</when>
-                <otherwise>,0 as user_id</otherwise>
-            </choose>
-        from problem
-            <if test="tag_id != null">,problem_tag_mapping, problem_tag</if>
-        <where>
-            problem.is_private = 0
-            <if test="class_id != null">
-                and class_id = #{class_id}
-            </if>
-            <if test="difficulty != null">
-                and difficulty = #{difficulty}
-            </if>
-            <if test="tag_id != null">
-                and problem.id = problem_tag_mapping.problem_id
-                and problem_tag.id = problem_tag_mapping.tag_id
-                and tag_id = #{tag_id}
-            </if>
-        </where>
-        limit #{offset},#{limit}
-    </select>-->
     <select id="list" resultMap="ProblemResultMap">
         select id, title, description, sample_input, sample_output, is_spj, hint, create_date, difficulty, class_id,
            user_id, is_private

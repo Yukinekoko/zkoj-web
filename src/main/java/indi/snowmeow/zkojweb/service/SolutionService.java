@@ -1,9 +1,6 @@
 package indi.snowmeow.zkojweb.service;
 
-import indi.snowmeow.zkojweb.model.Language;
-import indi.snowmeow.zkojweb.model.Problem;
 import indi.snowmeow.zkojweb.model.Solution;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;

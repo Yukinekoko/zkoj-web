@@ -20,7 +20,7 @@
     </resultMap>
 
     <select id="getListByProblemId" resultMap="ProblemLimitPoResultMap">
-        select id, problem_id, language, memory, time
+        select id, problem_id, language_id, memory, time
         from problem_limit
         where problem_id = #{problem_id}
     </select>

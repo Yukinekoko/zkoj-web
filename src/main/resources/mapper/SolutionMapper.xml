@@ -20,7 +20,7 @@
             <result property="name" column="user_name"/>
         </association>
         <association property="language"
-                     javaType="Language">
+                     javaType="LanguagePO">
             <result property="id" column="language_id"/>
             <result property="name" column="language_name"/>
         </association>
@@ -49,7 +49,7 @@
             <result property="name" column="user_name"/>
         </association>
         <association property="language" column="language_id"
-                     javaType="Language" select="indi.snowmeow.zkojweb.mapper.LanguageMapper.findById">
+                     javaType="LanguagePO" select="indi.snowmeow.zkojweb.mapper.LanguageMapper.findById">
             <id property="id" column="language_id"/>
             <result property="name" column="language_name"/>
         </association>

@@ -48,7 +48,7 @@ public interface ProblemClassMapper {
      *  获取所有分类信息
      * @return 分类对象 Map
      */
-    public List<Map<String, Object>> getClassesInfo();
+    List<ProblemClassPO> list();
     /**
      *  新增分组信息
      * @return 数据影响行数
