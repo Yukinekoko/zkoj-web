@@ -86,7 +86,7 @@ public class ProblemController {
     }
 
     /**
-     *  查询问题列表
+     *  管理后台查询问题列表
      * @param  difficulty - 难度
      * @param  classId  - 分类id
      * @param  tagId    - 标签id
