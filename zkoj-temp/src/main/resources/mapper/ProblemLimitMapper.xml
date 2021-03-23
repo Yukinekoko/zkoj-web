@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="indi.snowmeow.zkojweb.mapper.ProblemLimitMapper">
+
+    <resultMap id="ProblemLimitResultMap" type="ProblemLimit">
+        <id property="id" column="id"/>
+        <result property="problemId" column="problem_id"/>
+        <result property="languageId" column="language_id"/>
+        <result property="memory" column="memory"/>
+        <result property="time" column="time"/>
+    </resultMap>
+    <!-- TODO 临时 -->
+    <resultMap id="ProblemLimitPoResultMap" type="ProblemLimitPO">
+        <id property="id" column="id"/>
+        <result property="problemId" column="problem_id"/>
+        <result property="languageId" column="language_id"/>
+        <result property="memory" column="memory"/>
+        <result property="time" column="time"/>
+    </resultMap>
+
+    <select id="getListByProblemId" resultMap="ProblemLimitPoResultMap">
+        select id, problem_id, language_id, memory, time
+        from problem_limit
+        where problem_id = #{problem_id}
+    </select>
+
+    <select id="findListByProblemId" resultMap="ProblemLimitResultMap">
+        select *
+        from problem_limit
+        where problem_id = #{problem_id}
+    </select>
+
+    <select id="findByProblemIdAndLanguageId" resultType="ProblemLimit">
+        select time, memory
+        from problem_limit
+        where problem_id = #{problem_id}
+        and language_id = #{language_id}
+
+    </select>
+    <insert id="insertProblemLimit">
+        insert into problem_limit (problem_id,language_id,memory,time)
+        values(${problemId},${languageId},${memory},${time})
+    </insert>
+
+</mapper>

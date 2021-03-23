@@ -5,6 +5,8 @@ target/
 .mvn/
 mvnw
 mvnw.cmd
+zkoj-temp/src/main/resources/application-config.yml
+zkoj-base/src/main/resources/application-config.yml
 
 src/main/resources/application-config.yml
 ### STS ###

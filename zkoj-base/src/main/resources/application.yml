@@ -1,0 +1,32 @@
+server:
+  port: 8081
+
+spring:
+  # 环境
+  profiles:
+    include: config
+  # datasource
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: ${zkoj.database.url}
+    username: ${zkoj.database.username}
+    password: ${zkoj.database.password}
+    type: com.alibaba.druid.pool.DruidDataSource
+  # json
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    default-property-inclusion: non_null  # 当字段为null时不显示
+
+# mybatis
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: indi.snowmeow.zkojweb.model,indi.snowmeow.zkojweb.model.po
+
+path: classpath:/
+#logging:
+#  level:
+#    indi:
+#      snowmeow:
+#        zkojweb:
+#          mapper: debug
+#          controller: debug

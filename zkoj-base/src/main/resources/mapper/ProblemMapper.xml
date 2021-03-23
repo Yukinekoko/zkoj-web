@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="indi.snowmeow.zkojweb.mapper.ProblemMapper">
+
+    <resultMap id="ProblemDetailResultMap" type="Problem">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="description" column="description"/>
+        <result property="sampleInput" column="sample_input"/>
+        <result property="sampleOutput" column="sample_output"/>
+        <result property="hint" column="hint"/>
+        <result property="createDate" column="create_date"/>
+        <result property="difficulty" column="difficulty"/>
+        <association property="accepted" column="id"
+                     select="indi.snowmeow.zkojweb.mapper.SolutionMapper.countSubmitAcceptedCountFromProblemId" />
+        <association property="count" column="id"
+                     select="indi.snowmeow.zkojweb.mapper.SolutionMapper.countSubmitFromProblemId"/>
+        <association property="problemClass" column="class_id"
+                     javaType="ProblemClass" select="indi.snowmeow.zkojweb.mapper.ProblemClassMapper.getClassPreviewFromId"/>
+        <collection property="limit" column="id"
+                    ofType="ProblemLimit" select="indi.snowmeow.zkojweb.mapper.ProblemLimitMapper.findListByProblemId"/>
+        <collection property="tag" column="id"
+                    ofType="ProblemTag" select="indi.snowmeow.zkojweb.mapper.ProblemTagMapper.getTagListFromProblemId"/>
+    </resultMap>
+
+    <resultMap id="ProblemPreviewResultMap" type="Problem">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="difficulty" column="difficulty"/>
+        <association property="count" column="id"
+                     select="indi.snowmeow.zkojweb.mapper.SolutionMapper.countSubmitFromProblemId"/>
+        <association property="accepted" column="id"
+                     select="indi.snowmeow.zkojweb.mapper.SolutionMapper.countSubmitAcceptedCountFromProblemId"/>
+        <association property="status" column="{problem_id=id, user_id=user_id}" javaType="byte"
+                     select="indi.snowmeow.zkojweb.mapper.ProblemMapper.getStatus"/>
+        <association property="problemClass" column="id"
+                     javaType="ProblemClass"
+                     select="indi.snowmeow.zkojweb.mapper.ProblemClassMapper.getClassFromProblemId">
+            <id property="id" column="class_id"/>
+            <result property="name" column="class_name"/>
+        </association>
+        <collection property="tag" column="id"
+                    ofType="ProblemTag"
+                    select="indi.snowmeow.zkojweb.mapper.ProblemTagMapper.getTagListFromProblemId">
+            <id property="id" column="id"/>
+            <result property="name" column="name"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="ProblemSearchResultMap" type="Problem">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="difficulty" column="difficulty"/>
+        <result property="isPrivate" column="is_private"/>
+        <result property="createDate" column="create_date"/>
+        <association property="count" column="id"
+                     select="indi.snowmeow.zkojweb.mapper.SolutionMapper.countSubmitFromProblemId"/>
+        <association property="accepted" column="id"
+                     select="indi.snowmeow.zkojweb.mapper.SolutionMapper.countSubmitAcceptedCountFromProblemId"/>
+        <association property="problemClass" column="id"
+                     javaType="ProblemClass"
+                     select="indi.snowmeow.zkojweb.mapper.ProblemClassMapper.getClassFromProblemId">
+            <id property="id" column="class_id"/>
+            <result property="name" column="class_name"/>
+        </association>
+        <association property="user" column="user_id"
+                     javaType="UserPO"
+                     select="indi.snowmeow.zkojweb.mapper.UserMapper.getUserInfoById">
+        <id property="id" column="user_id"/>
+        <result property="user_name" column="user_name"/>
+        <result property="name" column="name"/>
+        </association>
+        <collection property="tag" column="id"
+                    ofType="ProblemTag"
+                    select="indi.snowmeow.zkojweb.mapper.ProblemTagMapper.getTagListFromProblemId">
+            <id property="id" column="id"/>
+            <result property="name" column="name"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="ProblemResultMap" type="ProblemPO">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="description" column="description"/>
+        <result property="sampleInput" column="sample_input"/>
+        <result property="sampleOutput" column="sampleOutput"/>
+        <result property="spj" column="is_spj"/>
+        <result property="hint" column="hint"/>
+        <result property="createDate" column="create_date"/>
+        <result property="difficulty" column="difficulty"/>
+        <result property="classId" column="class_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="privateProblem" column="is_private"/>
+    </resultMap>
+
+    <!-- 插入problem_sample_source_code-->
+    <insert id="insertSourceCode">
+        insert into problem_sample_source_code (problem_id, source_code,language_id)
+        values (${problemId},#{sourceCode},${languageId})
+    </insert>
+
+    <!--  根据条件搜索返回问题总数量-->
+    <select id="countProblemByConditions" resultType="int">
+        select count(problem.id)
+        from problem
+        <if test="tag_id !=null"> ,problem_tag_mapping , problem_tag</if>
+        <if test="upload_username !=null">,user</if>
+        <where>
+            <if test="upload_user_id !=null">
+                and problem.user_id =#{upload_user_id}
+            </if>
+            <if test="class_id != null">
+                and class_id = #{class_id}
+            </if>
+            <if test="difficulty != null">
+                and difficulty = #{difficulty}
+            </if>
+            <if test="tag_id != null">
+                and problem.id = problem_tag_mapping.problem_id
+                and problem_tag.id = problem_tag_mapping.tag_id
+                and tag_id = #{tag_id}
+            </if>
+            <if test="upload_username !=null">
+                and problem.user_id = userPO.id
+                and userPO.username = #{upload_username}
+            </if>
+        </where>
+
+
+    </select>
+    <!--  根据条件搜索-->
+    <select id="getProblemByConditions" resultMap="ProblemSearchResultMap">
+        select
+        problem.id , problem.title , problem.difficulty ,
+        problem.is_private , problem.create_date , problem.class_id ,
+        problem.user_id
+        from problem
+        <if test="tag_id !=null"> ,problem_tag_mapping , problem_tag</if>
+        <if test="upload_username !=null">,user</if>
+        <where>
+            <if test="upload_user_id !=null">
+                and problem.user_id =#{upload_user_id}
+            </if>
+            <if test="class_id != null">
+                and class_id = #{class_id}
+            </if>
+            <if test="difficulty != null">
+                and difficulty = #{difficulty}
+            </if>
+            <if test="tag_id != null">
+                and problem.id = problem_tag_mapping.problem_id
+                and problem_tag.id = problem_tag_mapping.tag_id
+                and tag_id = #{tag_id}
+            </if>
+            <if test="upload_username !=null">
+                and problem.user_id = userPO.id
+                and userPO.username = #{upload_username}
+            </if>
+        </where>
+        limit #{offset},#{limit}
+    </select>
+
+    <select id="countProblemBySearch" resultType="int">
+        select count(id)
+        from problem
+        <where>
+            <if test="is_number ==true">
+                problem.id LIKE '%${search}%'
+            </if>
+            <if test="is_number ==false">
+                problem.title LIKE '%${search}%'
+            </if>
+        </where>
+    </select>
+    <!-- 根据关键字搜索-->
+    <select id="getProblemBySearch" resultMap="ProblemSearchResultMap">
+        select id, title ,difficulty,is_private,create_date,user_id
+        from problem
+        <where>
+            <if test="is_number ==true">
+                problem.id LIKE '%${search}%'
+            </if>
+            <if test="is_number ==false">
+                problem.title LIKE '%${search}%'
+            </if>
+        </where>
+        limit #{offset},#{limit}
+    </select>
+
+    <!-- 获取问题列表 -->
+    <select id="list" resultMap="ProblemResultMap">
+        select id, title, description, sample_input, sample_output, is_spj, hint, create_date, difficulty, class_id,
+           user_id, is_private
+        from problem
+        <if test="classId != null">
+            left join problem_tag_mapping ptm on problem.id = ptm.problem_id
+            left join problem_tag pt on ptm.tag_id = pt.id
+        </if>
+        <if test="tagId != null">
+            left join problem_class pc on problem.class_id = pc.id
+        </if>
+        <where>
+            problem.is_private = 0
+            <if test="classId != null">
+                and class_id = #{classId}
+            </if>
+            <if test="tagId != null">
+                and tag_id = #{tagId}
+            </if>
+            <if test="difficulty != null">
+                and difficulty = #{difficulty}
+            </if>
+        </where>
+        limit #{offset},#{limit}
+    </select>
+    <!-- 根据题目ID搜索问题列表 -->
+    <select id="listSearchFromId" resultMap="ProblemResultMap">
+        select id, title, description, sample_input, sample_output, is_spj, hint, create_date, difficulty, class_id,
+        user_id, is_private
+        from problem
+        where id = #{problemId}
+        limit #{offset},#{limit}
+    </select>
+    <!-- 根据题目名搜索问题列表 TODO SQL注入风险 -->
+    <select id="listSearchFromName" resultMap="ProblemResultMap">
+        select id, title, description, sample_input, sample_output, is_spj, hint, create_date, difficulty, class_id,
+               user_id, is_private
+        from problem
+        where title like '%${name}%'
+        limit #{offset},#{limit}
+    </select>
+    <!-- 根据关键字搜索问题列表 弃用 -->
+    <select id="searchPreviewList" resultMap="ProblemPreviewResultMap">
+        select problem.title, problem.difficulty, problem.class_id, problem.id
+        <choose>
+            <when test="user_id != null">,#{user_id} as user_id</when>
+            <otherwise>,0 as user_id</otherwise>
+        </choose>
+        from problem
+        <where>
+            <if test="is_search_id == true">
+                problem.id like '%${search_text}%'
+            </if>
+            <if test="is_search_id == false">
+                problem.title like '%${search_text}%'
+            </if>
+        </where>
+        limit #{offset},#{limit}
+    </select>
+    <!-- 获取问题详细 -->
+    <select id="get" resultMap="ProblemResultMap">
+        select id, title, description, sample_input, sample_output, hint, create_date, difficulty, class_id
+        from problem
+        where id = #{problem_id}
+        and is_private = 0
+    </select>
+    <!-- 增加问题-->
+    <insert id="insertProblem" parameterType="Problem">
+        insert into problem
+        (title , description , sample_input , sample_output , is_spj , hint , create_date , difficulty , class_id , user_id , is_private)
+        values
+        (#{title} , #{description} , #{sampleInput} , #{sampleOutput},0,#{hint},now(),#{difficulty},#{problemClass.id},#{userPO.id},${isPrivate})
+        <selectKey resultType="Long" keyProperty="id" order="AFTER">
+            select @@IDENTITY
+        </selectKey>
+    </insert>
+    <!-- 获取问题总数 -->
+    <select id="count" resultType="int">
+        select count(id) as count
+        from problem
+        <where>
+            is_private = false
+            <if test="search_text != null">
+                <if test="is_search_id == true">
+                    and id like '%${search_text}%'
+                </if>
+                <if test="is_search_id != true">
+                    and title like '%${search_text}%'
+                </if>
+            </if>
+            <if test="search_text == null">
+                <if test="difficulty != null">
+                    and difficulty = #{difficulty}
+                </if>
+                <if test="class_id != null">
+                    and class_id = #{class_id}
+                </if>
+                <if test="tag_id != null">
+                    and id in (select problem_id
+                    from problem_tag_mapping
+                    where tag_id = #{tag_id})
+                </if>
+            </if>
+        </where>
+    </select>
+
+    <!-- 获取评测问题列表调用-->
+    <select id="getProblemById" resultType="Problem">
+        select * from problem where id=#{id}
+    </select>
+    <!-- 获取评测详细结果调用-->
+    <select id="getProblemTitleById" resultType="Problem">
+        select id,title from problem where id =#{id}
+    </select>
+    <!-- 获取用户对指定题目的评测情况（AC，尝试，未做） -->
+    <select id="getStatus" resultType="byte">
+        select (case min(status_id)
+                    when 1 then 1
+                    when min(status_id) >= 2 then 2
+                    else  0 end) as status
+        from solution
+        where problem_id = #{problem_id}
+          and user_id = #{user_id};
+    </select>
+    <update id="update">
+        update problem
+        <set>
+            <if test="title != null">
+                title = #{title},
+            </if>
+            <if test="description != null">
+                description = #{description},
+            </if>
+            <if test="sampleInput != null">
+                sample_input = #{sampleInput},
+            </if>
+            <if test="sampleOutput != null">
+                sample_output = #{sampleOutput},
+            </if>
+            <if test="hint != null">
+                hint = #{hint},
+            </if>
+            <if test="problemClass != null">
+                class_id = #{problemClass},
+            </if>
+            <if test="problemPrivate != null">
+                is_private = #{problemPrivate},
+            </if>
+            <if test="difficulty != null">
+                difficulty = #{difficulty},
+            </if>
+        </set>
+            where id = #{id}
+    </update>
+
+</mapper>

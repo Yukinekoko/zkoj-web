@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="indi.snowmeow.zkojweb.mapper.SolutionMapper">
+
+
+    <resultMap id="SolutionResultMap" type="Solution">
+        <id property="id" column="id"/>
+        <result property="time" column="time"/>
+        <result property="memory" column="memory"/>
+        <result property="submitDate" column="submit_date"/>
+        <association property="problem"
+                     javaType="Problem">
+            <result property="id" column="problem_id"/>
+            <result property="title" column="problem_title"/>
+        </association>
+        <association property="userPO"
+                     javaType="User">
+            <result property="username" column="user_username"/>
+            <result property="name" column="user_name"/>
+        </association>
+        <association property="language"
+                     javaType="LanguagePO">
+            <result property="id" column="language_id"/>
+            <result property="name" column="language_name"/>
+        </association>
+        <association property="status"
+                     javaType="Status">
+            <result property="id" column="status_id"/>
+            <result property="name" column="status_name"/>
+            <result property="description" column="status_description"/>
+        </association>
+    </resultMap>
+
+    <resultMap id="SolutionDetailResultMap" type="Map">
+        <result property="time" column="time"/>
+        <result property="memory" column="memory"/>
+        <result property="submit_date" column="submit_date"/>
+        <result property="error_message" column="error_message"/>
+        <result property="source_code" column="source_code"/>
+        <association property="problem" column="problem_id"
+                     javaType="Problem" select="indi.snowmeow.zkojweb.mapper.ProblemMapper.getProblemTitleById">
+            <id property="id" column="problem_id"/>
+            <result property="title" column="problem_title"/>
+        </association>
+        <association property="userPO" column="user_id"
+                     javaType="User" select="indi.snowmeow.zkojweb.mapper.UserMapper.findUserNameById">
+            <result property="username" column="user_username"/>
+            <result property="name" column="user_name"/>
+        </association>
+        <association property="language" column="language_id"
+                     javaType="LanguagePO" select="indi.snowmeow.zkojweb.mapper.LanguageMapper.findById">
+            <id property="id" column="language_id"/>
+            <result property="name" column="language_name"/>
+        </association>
+        <association property="status" column="status_id"
+                     javaType="Status" select="indi.snowmeow.zkojweb.mapper.StatusMapper.getStatusById">
+            <id property="id" column="id"/>
+            <result property="name" column="status_name"/>
+            <result property="description" column="status_description"/>
+        </association>
+    </resultMap>
+    <!-- 获取评测详细接口-->
+    <select id="getSolutionDetail" resultMap="SolutionDetailResultMap">
+        select status_id , language_id , user_id , problem_id , time , memory, submit_date,error_message
+        <if test="isUser != false">, solution_source_code.source_code as source_code</if>
+        from solution
+        left join solution_source_code
+        on solution.id = solution_source_code.solution_id
+        where solution.id = #{solutionId}
+    </select>
+    <!-- 获取评测用户id-->
+    <select id="getUserIdFromSolutionId" resultType="Long">
+        select user_id
+        from solution
+        where id = #{solutionId}
+    </select>
+    <!-- 获取指定题目的评测总数 -->
+    <select id="countSubmitFromProblemId" resultType="int">
+        select count(id) as count
+        from solution
+        where problem_id = #{problem_id}
+    </select>
+    <!-- 获取指定题目的AC评测总数 -->
+    <select id="countAcceptedFromProblemId" resultType="int">
+        select count(id) as accepted
+        from solution
+        where problem_id = #{problem_id}
+          and status_id = 1
+    </select>
+    <!-- 插入新评测 -->
+    <insert id="insert" parameterType="SolutionEntity" useGeneratedKeys="true" keyProperty="id">
+        insert into solution(problem_id, user_id, time, memory, status_id, language_id)
+        values (#{problemId},
+                #{userId},
+                #{time},
+                #{memory},
+                #{statusId},
+                #{languageId})
+    </insert>
+    <!-- 获取评测总数 -->
+    <select id="getSolutionCount" resultType="int">
+        select count(solution.id)
+        from solution
+        left join userPO
+        on solution.user_id = userPO.id
+        <where>
+            <if test="statusId !=null">
+            and solution.status_id = #{statusId}
+            </if>
+            <if test="problemId !=null">
+            and solution.problem_id = #{problemId}
+            </if>
+            <if test="username !=null">
+            and userPO.username = #{username}
+            </if>
+            <if test="solutionId !=null">
+               and solution.id = ${solutionId}
+            </if>
+        </where>
+    </select>
+    <!-- 获取评测列表 -->
+    <select id="getSolutionList" resultMap="SolutionResultMap">
+        select so.* , problem.title as problem_title , language.name as language_name
+        from (select solution.id ,
+        problem_id,
+        language_id,
+        userPO.username as user_username,
+        userPO.name as user_name,
+        time,memory,submit_date,
+        solution_status.id as status_id,
+        solution_status.name as status_name,
+        solution_status.description as status_description
+        from solution
+        left join userPO
+        on solution.user_id = userPO.id
+        left join solution_status
+        on solution.status_id = solution_status.id
+        <where>
+            <if test="problemId !=null">
+                solution.problem_id = #{problemId}
+            </if>
+            <if test="statusId !=null">
+                and solution.status_id = #{statusId}
+            </if>
+            <if test="userName !=null">
+                and userPO.username = #{userName}
+            </if>
+            <if test="solutionId!=null">
+                solution.id = ${solutionId}
+            </if>
+        </where>
+
+        group by solution.id) as so
+        left join problem
+        on problem.id = so.problem_id
+        left join language
+        on language.id = so.language_id
+        ORDER BY submit_date DESC
+        limit #{offset},#{limit}
+        ;
+    </select>
+
+</mapper>

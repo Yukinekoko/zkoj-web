@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE  mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="indi.snowmeow.zkojweb.mapper.UserMapper">
+
+    <resultMap id="UserResultMap" type="UserPO">
+
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="name" column="name"/>
+
+        <result property="faceUrl" column="face_url"/>
+        <result property="email" column="email"/>
+        <result property="description" column="description"/>
+
+        <result property="status" column="status"/>
+        <result property="createIp" column="create_ip"/>
+        <result property="createDate" column="create_date"/>
+        <result property="lastIp" column="last_ip"/>
+        <result property="lastDate" column="last_date"/>
+        <result property="roleId" column="role_id"/>
+    </resultMap>
+    <resultMap id="UserInfoResultMap" type="UserInfo">
+        <result property="username" column="username"/>
+        <result property="name"     column="name"/>
+        <result property="faceUrl"  column="face_url"/>
+        <result property="email"    column="email"/>
+        <result property="description" column="description"/>
+        <result property="lastDate" column="last_date"/>
+        <result property="createDate" column="create_date"/>
+    </resultMap>
+
+    <select id="getIdFromUserName" resultType="long">
+        select id  from userPO where username = #{username}
+    </select>
+    <!-- 获取评测详细调用-->
+    <select id="findUserNameById" resultMap="UserResultMap">
+        select username,name  from userPO where id = #{id}
+    </select>
+    <select id="findByUsername" resultMap="UserResultMap">
+
+        select * from userPO where username = #{username}
+    </select>
+    <select id="findByName" resultMap="UserResultMap">
+        select * from userPO where name = #{name}
+    </select>
+    <insert id="insert" parameterType="UserPO"  >
+        insert into userPO
+        (username,password,name,status,create_ip,create_date,last_ip,last_date,role_id)
+        values
+        (#{username}, #{password}, #{name}, #{status}, #{createIp}, now(), #{lastIp}, now(), #{roleId});
+    </insert>
+    <select id="getUserInfo" resultMap="UserInfoResultMap">
+        select * from userPO where username = #{username}
+    </select>
+    <!-- TODO: 耦合 -->
+    <update id="updateUserLastDate">
+        update userPO set last_date = now() where username =#{username}
+    </update>
+
+    <update id="updateLastDateAndLastIp">
+        update userPO set last_date = now(), last_ip = #{last_ip} where username=#{username}
+    </update>
+    <!-- 获取评测列表调用
+    <select id="getUserById" resultMap="User">
+        select * from userPO where id = #{id}
+    </select>
+    -->
+    <resultMap id="RankResultMap" type="Map">
+        <result property="userId" column="userPO"/>
+        <result property="accepted" column="accepted"/>
+        <result property="rank" column="rank_no"/>
+        <result property="username" column="username"/>
+        <result property="name" column="name"/>
+    </resultMap>
+    <!-- 查询总体排行-->
+    <select id="getRank" resultMap="RankResultMap">
+        select c.*,userPO.username,userPO.name
+        from
+        (
+        select a.*,@rank:=@rank+1 as rank_no
+        from
+        (
+        select A.user_id as userPO, count(A.user_id) as accepted
+        from (
+        select distinct problem_id, status_id, user_id
+        from solution
+        where status_id = 1
+        ) as A
+        group by user_id
+        order by accepted desc
+        ) a , (select @rank:=0) b
+        ) c
+        left join userPO
+        on c.userPO = userPO.id
+        limit ${page},50
+
+    </select>
+    <!-- 查询用户排名-->
+    <select id="getUserRank" resultType="Integer" >
+        select c.rank_no
+        from
+        (
+        select a.*,@rank:=@rank+1 as rank_no
+        from
+        (
+        select A.user_id as userPO, count(A.user_id) as accepted
+        from (
+        select distinct problem_id, status_id, user_id
+        from solution
+        where status_id = 1
+        ) as A
+        group by user_id
+        order by accepted desc
+        ) a , (select @rank:=0) b
+        ) c
+        where c.userPO=${userId}
+    </select>
+    <!-- 查询用户的通过数-->
+    <select id="getUserAcceptedCount" resultType="Integer">
+        select count(A.problem_id) as accepted_count
+        from(
+        select problem_id,user_id
+        from solution
+        where status_id =1 and user_id=${userId}
+        group by problem_id) as A;
+    </select>
+    <!-- 查询用户的提交总数-->
+    <select id="getUserSubmitCount" resultType="Integer">
+        select count(*) as submit_count
+        from solution
+        where  user_id=${userId}
+    </select>
+    <resultMap id="UserProblemResultMap" type="Map">
+        <result property="problem_id" column="problem_id"/>
+        <result property="title" column="title"/>
+    </resultMap>
+    <!-- 查询用户尝试过的题目-->
+    <select id="getUserProblemTried" resultMap="UserProblemResultMap">
+        select B.problem_id ,problem.title
+        from
+        (select *
+        from solution
+        where  user_id=${userId}
+        group by problem_id) B
+        left join problem
+        on B.problem_id = problem.id
+    </select>
+    <select id="getUserProblemAccepted" resultMap="UserProblemResultMap">
+        select B.problem_id ,problem.title
+        from
+        (select *
+        from solution
+        where  user_id=${userId} and status_id =1
+        group by problem_id) B
+        left join problem
+        on B.problem_id = problem.id
+    </select>
+
+    <update id="updateUserRole">
+        update userPO set role_id = ${roleId} where username = #{username}
+    </update>
+
+    <update id="updateUserPassword">
+        update userPO set password = #{password} where username = #{username}
+    </update>
+
+
+
+    <update id="updateUserStatus" >
+            update userPO set status = ${type} where username =#{username}
+    </update>
+    <!-- 查询问题列表调用-->
+    <select id="getUserInfoById" resultMap="UserResultMap">
+        select id ,username,name from userPO where id = #{id}
+    </select>
+
+    <update id="updateUserInfo">
+        update userPO set
+        <if test="name!=null">name = #{name}</if>
+        <if test="email!=null">
+          <if test="name!=null">,</if>
+            email =#{email}
+        </if>
+        <if test="description!=null">
+            <if test="email!=null">,</if>
+            description = #{description}</if>
+        where username = #{username}
+    </update>
+
+
+
+
+
+    <insert id="insertUsers" parameterType="java.util.ArrayList">
+        insert into userPO
+        (username,password,name,status,create_ip,create_date,last_date,last_ip,role_id)
+        values
+        <foreach collection="list" item="item"  separator=",">
+        (#{item.username},#{item.password},#{item.name},1,#{item.createIp},now(),now(),#{item.lastIp},1)
+        </foreach>
+    </insert>
+
+
+
+    <resultMap id="UserListResultMap" type="Map">
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="name" column="name"/>
+        <result property="lastIp" column="last_ip"/>
+        <result property="lastDate" column="last_date"/>
+        <result property="status" column="status"/>
+        <result property="role_id" column="role_id"/>
+    </resultMap>
+
+
+
+    <select id="getUserList" resultMap="UserListResultMap">
+        select id,username,name,last_ip,last_date,status,role_id
+        from userPO
+        <where>
+            <if test="roleId !=null"> role_id = ${roleId}</if>
+            <if test="status !=null"> and status = ${status}</if>
+            <if test="search !=null"> and  username like '%${search}%'</if>
+        </where>
+        limit ${offset},${limit}
+    </select>
+
+
+
+</mapper>
