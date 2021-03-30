@@ -1,10 +1,13 @@
 package indi.snowmeow.zkojweb.config;
 
-import indi.snowmeow.zkojweb.security.AccessDeniedEntryPoint;
+import indi.snowmeow.zkojweb.security.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
 /**
@@ -12,19 +15,49 @@ import org.springframework.security.web.AuthenticationEntryPoint;
  * @date 2021/3/22
  */
 @Configuration
+//@EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    AccessDeniedEntryPoint accessDeniedEntryPoint;
+
+    @Autowired
+    SecurityAuthenticationSuccessHandler authenticationSuccessHandler;
+
+    @Autowired
+    SecurityAuthenticationFailureHandler authenticationFailureHandler;
+
+    @Autowired
+    SecurityUserDetailsService userDetailsService;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.formLogin()
-            .loginPage("/login")
+            .loginProcessingUrl("/login")
+            .usernameParameter("username")
+            .passwordParameter("password")
+            .successHandler(authenticationSuccessHandler)
+            .failureHandler(authenticationFailureHandler)
+            .permitAll()
+
+            .and().authorizeRequests()
+            .anyRequest()
+            .permitAll()
 
             .and().exceptionHandling()
-            .authenticationEntryPoint(getAuthenticationEntryPoint());
+            .authenticationEntryPoint(accessDeniedEntryPoint)
+
+            .and().csrf().disable()
+
+            .userDetailsService(userDetailsService);
     }
 
-    //@Bean
-    protected AuthenticationEntryPoint getAuthenticationEntryPoint() {
-        return new AccessDeniedEntryPoint();
+    @Bean
+    protected PasswordEncoder getPasswordEncoder() {
+        return new SecurityPasswordEncoder();
     }
+
+
+
+
 }

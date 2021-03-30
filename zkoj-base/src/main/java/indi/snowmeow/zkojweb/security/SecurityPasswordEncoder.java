@@ -1,7 +1,10 @@
 package indi.snowmeow.zkojweb.security;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 import org.springframework.util.DigestUtils;
 
 /**
@@ -9,6 +12,8 @@ import org.springframework.util.DigestUtils;
  * @date 2021/3/23
  */
 public class SecurityPasswordEncoder implements PasswordEncoder {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SecurityPasswordEncoder.class);
 
     /**
      * 用户密码一次加密加盐值
@@ -23,6 +28,10 @@ public class SecurityPasswordEncoder implements PasswordEncoder {
 
     @Override
     public String encode(CharSequence charSequence) {
+        LOGGER.info("encode:" + charSequence);
+        if (charSequence.length() != 32) {
+            return charSequence.toString();
+        }
         String encodeString = DigestUtils.md5DigestAsHex((PASSWORD_SALT_1 +
             charSequence.toString().substring(0,24)).getBytes());
         encodeString= DigestUtils.md5DigestAsHex((PASSWORD_SALT_2 +

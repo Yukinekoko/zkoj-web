@@ -49,12 +49,6 @@
         insert into User
         (username,password,name,status,create_ip,create_date,last_ip,last_date,role_id)
         values
-        (#{username}, #{password}, #{name}, #{status}, #{createIp}, now(), #{lastIp}, now(), #{roleId});
-    </insert>
-    <insert id="insert" parameterType="UserPO"  >
-        insert into User
-        (username,password,name,status,create_ip,create_date,last_ip,last_date,role_id)
-        values
         (#{username}, #{password}, #{name}, #{status}, #{createIp}, now(), #{createIp}, now(), #{roleId});
     </insert>
     <select id="getUserInfo" resultMap="UserInfoResultMap">

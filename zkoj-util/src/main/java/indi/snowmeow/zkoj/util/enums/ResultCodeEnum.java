@@ -19,7 +19,8 @@ public enum ResultCodeEnum {
     /** 用户异常 */
     USER_ERROR(20001, "用户异常"),
     USER_ACCOUNT_NOT_EXIST(20002, "账号不存在"),
-    USER_NOT_LOGIN(20003, "用户未登录");
+    USER_NOT_LOGIN(20003, "用户未登录"),
+    USER_LOGIN_FAILURE(20004, "登录失败");
 
     private final int code;
 

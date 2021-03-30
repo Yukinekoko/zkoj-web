@@ -2,9 +2,12 @@ package indi.snowmeow.zkojweb.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import indi.snowmeow.zkoj.util.base.BaseResult;
+import indi.snowmeow.zkoj.util.enums.ResultCodeEnum;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +20,7 @@ import java.io.IOException;
  * @author snowmeow
  * @date 2021/3/23
  */
+@Component
 public class AccessDeniedEntryPoint implements AuthenticationEntryPoint {
 
     @Autowired
@@ -24,8 +28,9 @@ public class AccessDeniedEntryPoint implements AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException, ServletException {
-        BaseResult<Void> result = BaseResult.fail();
+        BaseResult<Void> result = BaseResult.fail(ResultCodeEnum.USER_NOT_LOGIN);
         httpServletResponse.setContentType("text/json;charset=utf-8");
+        httpServletResponse.setStatus(403);
         httpServletResponse.getWriter().write(jsonMapper.writeValueAsString(result));
     }
 }

@@ -33,7 +33,7 @@ public class UserController {
      * 登录接口
      * @param requestBody - {username, password}
      * */
-    @PostMapping("/login")
+    //@PostMapping("/login")
     public Object login(HttpServletRequest request,
                         @RequestBody Map<String, Object> requestBody) {
 /*        String username = (String) requestBody.get("username");
