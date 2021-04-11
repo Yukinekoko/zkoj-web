@@ -7,7 +7,7 @@ spring:
     include: config
   # datasource
   datasource:
-    driver-class-name: com.mysql.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
     url: ${zkoj.database.url}
     username: ${zkoj.database.username}
     password: ${zkoj.database.password}
