@@ -38,3 +38,4 @@ build/
 .vscode/
 /src/test/
 /zkoj-auth/src/main/resources/jwt.jks
+/zkoj-gateway/src/main/resources/public.txt

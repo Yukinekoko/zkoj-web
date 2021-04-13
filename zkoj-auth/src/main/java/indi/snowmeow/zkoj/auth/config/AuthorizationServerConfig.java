@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
@@ -30,7 +31,7 @@ import java.util.Arrays;
 @EnableAuthorizationServer
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
 
-    @Autowired
+  @Autowired
     AuthenticationManager authenticationManager;
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -44,7 +45,9 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
         endpoints.tokenStore(jwtTokenStore())
                 .authenticationManager(authenticationManager)
-                .tokenEnhancer(tokenEnhancerChain);
+                .tokenEnhancer(tokenEnhancerChain)
+                .allowedTokenEndpointRequestMethods(HttpMethod.POST)
+                .pathMapping("/oauth/token", "/auth/login");
     }
 
     /* 设置客户端信息 */

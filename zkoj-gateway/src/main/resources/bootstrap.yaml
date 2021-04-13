@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: zkoj-gateway
+
+  cloud:
+    nacos:
+      config:
+        server-addr: 192.168.31.179:8848
+        namespace: 68b82383-04a7-466b-b1a5-7790cf9b4645
+        cluster-name: ${spring.application.name}
+        name: ${spring.application.name}
+        file-extension: yaml
+
+server:
+  port: 8081
+
