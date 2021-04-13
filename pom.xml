@@ -5,9 +5,10 @@
     <packaging>pom</packaging>
     <modules>
         <module>zkoj-base</module>
-        <module>zkoj-admin</module>
-        <module>zkoj-util</module>
+        <module>zkoj-common</module>
         <module>zkoj-temp</module>
+        <module>zkoj-auth</module>
+        <module>zkoj-gateway</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -30,6 +31,13 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- common -->
+            <dependency>
+                <groupId>indi.snowmeow</groupId>
+                <artifactId>zkoj-common</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-parent</artifactId>
@@ -51,21 +59,31 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
             <!-- mybatis -->
             <dependency>
                 <groupId>org.mybatis.spring.boot</groupId>
                 <artifactId>mybatis-spring-boot-starter</artifactId>
                 <version>2.1.3</version>
             </dependency>
-
+            <!--  mybatis plus -->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>3.4.2</version>
+            </dependency>
             <!-- druid -->
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>druid-spring-boot-starter</artifactId>
                 <version>1.2.5</version>
             </dependency>
-
+            <!-- lombok -->
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.20</version>
+                <scope>provided</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
