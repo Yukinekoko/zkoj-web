@@ -1,6 +1,6 @@
-package indi.snowmeow.zkoj.util.base;
+package indi.snowmeow.zkoj.base.common.base;
 
-import indi.snowmeow.zkoj.util.enums.ResultCodeEnum;
+import indi.snowmeow.zkoj.base.common.enums.ResultCodeEnum;
 
 import java.io.Serializable;
 

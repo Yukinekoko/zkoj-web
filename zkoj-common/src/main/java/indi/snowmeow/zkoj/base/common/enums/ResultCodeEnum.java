@@ -1,4 +1,4 @@
-package indi.snowmeow.zkoj.util.enums;
+package indi.snowmeow.zkoj.base.common.enums;
 
 /**
  * API代码

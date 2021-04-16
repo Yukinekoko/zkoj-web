@@ -1,4 +1,4 @@
-package indi.snowmeow.zkoj.util.base;
+package indi.snowmeow.zkoj.base.common.base;
 
 /**
  * @author snowmeow
