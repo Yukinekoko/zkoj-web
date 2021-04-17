@@ -1,5 +1,7 @@
 package indi.snowmeow.zkoj.base.model.req;
 
+import lombok.Data;
+
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
@@ -7,6 +9,7 @@ import javax.validation.constraints.Min;
  * @author snowmeow
  * @date 2021/2/20
  */
+@Data
 public class ProblemCountRequest {
 
     /** 难度筛选 */
@@ -19,37 +22,9 @@ public class ProblemCountRequest {
     /** 标签筛选 */
     @Min(0)
     private Long tagId;
+    /** 用户做题状态筛选 */
+    @Min(0)
+    @Max(2)
+    private Byte status;
 
-    @Override
-    public String toString() {
-        return "ProblemCountRequest{" +
-                "difficulty=" + difficulty +
-                ", classId=" + classId +
-                ", tagId=" + tagId +
-                '}';
-    }
-
-    public Byte getDifficulty() {
-        return difficulty;
-    }
-
-    public void setDifficulty(Byte difficulty) {
-        this.difficulty = difficulty;
-    }
-
-    public Long getClassId() {
-        return classId;
-    }
-
-    public void setClassId(Long classId) {
-        this.classId = classId;
-    }
-
-    public Long getTagId() {
-        return tagId;
-    }
-
-    public void setTagId(Long tagId) {
-        this.tagId = tagId;
-    }
 }

@@ -2,7 +2,9 @@ package indi.snowmeow.zkoj.base.controller;
 
 import indi.snowmeow.zkoj.base.common.util.AuthenticationUtil;
 import indi.snowmeow.zkoj.base.common.util.JwtUtil;
+import indi.snowmeow.zkoj.base.model.dto.ProblemCountDTO;
 import indi.snowmeow.zkoj.base.model.dto.ProblemListRequestDTO;
+import indi.snowmeow.zkoj.base.model.req.ProblemCountRequest;
 import indi.snowmeow.zkoj.base.model.req.ProblemListRequest;
 import indi.snowmeow.zkoj.base.model.vo.ProblemDetailVO;
 import indi.snowmeow.zkoj.base.service.PmsProblemService;
@@ -26,6 +28,8 @@ public class ProblemController {
 
     @Autowired
     ProblemDomainService problemDomainService;
+    @Autowired
+    PmsProblemService pmsProblemService;
 
     /**
      * 获取文章列表
@@ -48,6 +52,17 @@ public class ProblemController {
     @GetMapping("/problem/{problem_id}")
     public Object getProblemDetail(@PathVariable(name = "problem_id") Long problemId){
         return BaseResult.success(problemDomainService.getDetail(problemId));
+    }
+
+    /**
+     * 获取文章总数
+     * */
+    @GetMapping("/problem/count")
+    public Object getProblemCount(@Valid @ModelAttribute ProblemCountRequest request) {
+        ProblemCountDTO requestDTO = new ProblemCountDTO();
+        BeanUtils.copyProperties(request, requestDTO);
+        int count = pmsProblemService.countByPublic(requestDTO);
+        return BaseResult.success(count);
     }
 
 }

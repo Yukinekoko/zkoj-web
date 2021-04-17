@@ -1,5 +1,6 @@
 package indi.snowmeow.zkoj.base.service;
 
+import indi.snowmeow.zkoj.base.model.dto.ProblemCountDTO;
 import indi.snowmeow.zkoj.base.model.dto.ProblemListRequestDTO;
 import indi.snowmeow.zkoj.base.model.entity.PmsProblem;
 
@@ -14,4 +15,6 @@ public interface PmsProblemService {
     List<PmsProblem> list(ProblemListRequestDTO request);
 
     PmsProblem getFromId(long id);
+
+    int countByPublic(ProblemCountDTO dto);
 }

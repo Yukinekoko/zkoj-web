@@ -1,9 +1,13 @@
 package indi.snowmeow.zkoj.base.model.dto;
 
+import lombok.Data;
+import org.apache.ibatis.annotations.Param;
+
 /**
  * @author snowmeow
  * @date 2021/2/20
  */
+@Data
 public class ProblemCountDTO {
 
     /** 难度筛选 */
@@ -13,36 +17,8 @@ public class ProblemCountDTO {
     /** 标签筛选 */
     private Long tagId;
 
-    @Override
-    public String toString() {
-        return "ProblemCountDTO{" +
-                "difficulty=" + difficulty +
-                ", classId=" + classId +
-                ", tagId=" + tagId +
-                '}';
-    }
+    private Byte status;
 
-    public Byte getDifficulty() {
-        return difficulty;
-    }
+    private Long userId;
 
-    public void setDifficulty(Byte difficulty) {
-        this.difficulty = difficulty;
-    }
-
-    public Long getClassId() {
-        return classId;
-    }
-
-    public void setClassId(Long classId) {
-        this.classId = classId;
-    }
-
-    public Long getTagId() {
-        return tagId;
-    }
-
-    public void setTagId(Long tagId) {
-        this.tagId = tagId;
-    }
 }
