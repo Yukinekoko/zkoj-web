@@ -29,4 +29,9 @@ public interface PmsSolutionMapper extends BaseMapper<PmsSolution> {
      * */
     byte getPreviewStatus(@Param("problem_id") long problemId, @Param("user_id") long userId);
 
+    /**
+     * 获取指定用户的AC数量排名
+     * */
+    int getRankFromUserId(long userId);
+
 }

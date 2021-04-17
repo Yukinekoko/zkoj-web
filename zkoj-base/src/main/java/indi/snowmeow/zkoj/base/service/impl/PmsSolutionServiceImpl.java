@@ -1,9 +1,13 @@
 package indi.snowmeow.zkoj.base.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import indi.snowmeow.zkoj.base.dao.PmsSolutionMapper;
+import indi.snowmeow.zkoj.base.model.entity.PmsSolution;
 import indi.snowmeow.zkoj.base.service.PmsSolutionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * @author snowmeow
@@ -28,5 +32,17 @@ public class PmsSolutionServiceImpl implements PmsSolutionService {
     @Override
     public byte getPreviewStatus(long problemId, long userId) {
         return pmsSolutionMapper.getPreviewStatus(problemId, userId);
+    }
+
+    @Override
+    public List<PmsSolution> getFromUserId(long userId) {
+        QueryWrapper<PmsSolution> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id", userId);
+        return pmsSolutionMapper.selectList(queryWrapper);
+    }
+
+    @Override
+    public int getRankFromUserId(long userId) {
+        return pmsSolutionMapper.getRankFromUserId(userId);
     }
 }

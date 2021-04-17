@@ -27,4 +27,15 @@
         limit 1
     </select>
 
+    <select id="getRankFromUserId" resultType="int">
+        select rank_no
+        from (select user_id, @rank:=@rank+1 as rank_no
+              from (select distinct problem_id, status_id, user_id, count(id) as accepted
+                    from pms_solution
+                    where status_id = 1
+                    group by user_id
+                    order by accepted desc) as p, (select @rank := 0) as r) as p
+        where user_id = #{userId};
+    </select>
+
 </mapper>
