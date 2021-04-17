@@ -13,9 +13,10 @@ public enum ResultCodeEnum {
     /** 默认异常 */
     COMMON_ERROR(0, "Error"),
 
-    /** 参数异常 */
+    /** 系统异常 */
     PARAM_ERROR(10001, "参数错误"),
-
+    TOKEN_ERROR(10002, "token异常"),
+    SYSTEM_ERROR(10003, "系统异常"),
     /** 用户异常 */
     USER_ERROR(20001, "用户异常"),
     USER_ACCOUNT_NOT_EXIST(20002, "账号不存在"),

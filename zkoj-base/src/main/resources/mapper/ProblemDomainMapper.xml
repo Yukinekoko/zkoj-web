@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="indi.snowmeow.zkoj.base.dao.ProblemDomainMapper">
+
+    <resultMap id="ProblemPreviewResultMap" type="indi.snowmeow.zkoj.base.model.vo.ProblemPreviewVO">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="difficulty" column="difficulty"/>
+        <result property="count" column="count"/>
+        <result property="accepted" column="accepted"/>
+        <result property="status" column="status"/>
+        <association property="problemClass" column="id"
+                     javaType="indi.snowmeow.zkoj.base.model.vo.ProblemClassPreviewVO">
+            <id property="id" column="class_id"/>
+            <result property="name" column="class_name"/>
+        </association>
+        <collection property="tag"  column="id"
+                    ofType="indi.snowmeow.zkoj.base.model.vo.ProblemTagVO">
+            <id property="id" column="tag_id"/>
+            <result property="name" column="tag_name"/>
+        </collection>
+    </resultMap>
+
+    <!-- 屎山待改 -->
+    <select id="listPreview" resultMap="ProblemPreviewResultMap">
+        select p.*, pt.id as tag_id, pt.name as tag_name
+        from (select problem.id,
+                     problem.title,
+                     problem.difficulty,
+                     problem_class.id         as class_id,
+                     problem_class.name       as class_name,
+                     count(solution.id)       as count,
+                     ifnull(ac.accepted, 0)   as accepted
+                     <if test="userId != null">,ifnull(status.status, 0) as status</if>
+              from pms_problem as problem
+                       <if test="tagId != null">
+                       left join pms_problem_tag_mapping ptm on problem.id = ptm.problem_id
+                       left join pms_problem_tag pt on ptm.tag_id = pt.id
+                       </if>
+                       left join pms_problem_class problem_class on problem.class_id = problem_class.id
+                       left join pms_solution solution on problem.id = solution.problem_id
+                       left join (select p.id, count(p.id) as accepted
+                                  from pms_problem as p
+                                           left join pms_solution as s on p.id = s.problem_id
+                                  where s.status_id = 1
+                                  group by p.id) as ac on ac.id = problem.id
+                       <if test="userId != null">
+                       left join (select problem_id,
+                           (case
+                           when min(status_id) = 1 then 1
+                           when min(status_id) > 1 then 2
+                           else 0 end) as status
+                           from pms_solution
+                           where user_id = #{userId}
+                           group by problem_id) as status on status.problem_id = problem.id
+                       </if>
+              <where>
+                  problem.is_private = 0
+                  <if test="tagId != null">and tag_id = #{tagId}</if>
+                  <if test="classId != null">and problem.class_id = #{classId}</if>
+                  <if test="difficulty != null">and problem.difficulty = #{difficulty}</if>
+              </where>
+              group by problem.id
+              limit #{offset}, #{limit}
+             ) as p
+                 left join pms_problem_tag_mapping ptm on p.id = ptm.problem_id
+                 left join pms_problem_tag pt on ptm.tag_id = pt.id
+    </select>
+
+    <!-- 屎山待改 -->
+    <select id="listPreviewFromSearchTitle" resultMap="ProblemPreviewResultMap">
+        select p.*, pt.id as tag_id, pt.name as tag_name
+        from (select problem.id,
+            problem.title,
+            problem.difficulty,
+            problem_class.id         as class_id,
+            problem_class.name       as class_name,
+            count(solution.id)       as count,
+            ifnull(ac.accepted, 0)   as accepted
+            <if test="userId != null">,ifnull(status.status, 0) as status</if>
+            from pms_problem as problem
+            left join pms_problem_class problem_class on problem.class_id = problem_class.id
+            left join pms_solution solution on problem.id = solution.problem_id
+            left join (select p.id, count(p.id) as accepted
+            from pms_problem as p
+            left join pms_solution as s on p.id = s.problem_id
+            where s.status_id = 1
+            group by p.id) as ac on ac.id = problem.id
+            <if test="userId != null">
+                left join (select problem_id,
+                (case
+                when min(status_id) = 1 then 1
+                when min(status_id) > 1 then 2
+                else 0 end) as status
+                from pms_solution
+                where user_id = #{userId}
+                group by problem_id) as status on status.problem_id = problem.id
+            </if>
+            where problem.is_private = 0 and problem.title like #{searchText}
+            group by problem.id
+            limit #{offset}, #{limit}) as p
+        left join pms_problem_tag_mapping ptm on p.id = ptm.problem_id
+        left join pms_problem_tag pt on ptm.tag_id = pt.id
+    </select>
+
+</mapper>

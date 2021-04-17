@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="indi.snowmeow.zkoj.base.dao.PmsProblemMapper">
+
+    <!-- 获取问题列表 -->
+    <select id="list" resultType="indi.snowmeow.zkoj.base.model.entity.PmsProblem">
+        select id, title, description, sample_input, sample_output, is_spj, hint, problem.gmt_create, problem.gmt_modified, difficulty, class_id,
+        user_id, is_private
+        from pms_problem as problem
+        <if test="request.classId != null">
+            left join pms_problem_tag_mapping ptm on problem.id = ptm.problem_id
+            left join pms_problem_tag pt on ptm.tag_id = pt.id
+        </if>
+        <if test="request.tagId != null">
+            left join pms_problem_class pc on problem.class_id = pc.id
+        </if>
+        <where>
+            problem.is_private = 0
+            <if test="request.classId != null">
+                and class_id = #{classId}
+            </if>
+            <if test="request.tagId != null">
+                and tag_id = #{tagId}
+            </if>
+            <if test="request.difficulty != null">
+                and difficulty = #{difficulty}
+            </if>
+        </where>
+    </select>
+</mapper>

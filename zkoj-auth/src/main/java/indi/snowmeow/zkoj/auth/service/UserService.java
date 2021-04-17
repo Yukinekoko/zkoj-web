@@ -9,4 +9,6 @@ import indi.snowmeow.zkoj.auth.model.dto.UserLoginDTO;
 public interface UserService {
 
     UserLoginDTO findByUsername(String username);
+
+    long getIdFromUsername(String username);
 }

@@ -10,6 +10,7 @@ import indi.snowmeow.zkoj.auth.model.entity.UmsRole;
 import indi.snowmeow.zkoj.auth.model.entity.UmsUser;
 import indi.snowmeow.zkoj.auth.model.entity.UmsUserRoleMapping;
 import indi.snowmeow.zkoj.auth.service.UserService;
+import indi.snowmeow.zkoj.base.common.base.BaseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -57,5 +58,16 @@ public class UserServiceImpl implements UserService {
         userLoginDTO.setRoles(roleStrings);
 
         return userLoginDTO;
+    }
+
+    @Override
+    public long getIdFromUsername(String username) {
+        QueryWrapper<UmsUser> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("username", username);
+        UmsUser user = umsUserMapper.selectOne(queryWrapper);
+        if (null == user) {
+            throw new RuntimeException("User Not Exits!");
+        }
+        return user.getId();
     }
 }
