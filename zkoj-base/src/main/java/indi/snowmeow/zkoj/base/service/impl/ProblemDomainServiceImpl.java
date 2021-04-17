@@ -5,12 +5,10 @@ import indi.snowmeow.zkoj.base.dao.ProblemDomainMapper;
 import indi.snowmeow.zkoj.base.model.dto.ProblemListRequestDTO;
 import indi.snowmeow.zkoj.base.model.entity.PmsProblem;
 import indi.snowmeow.zkoj.base.model.entity.PmsProblemClass;
+import indi.snowmeow.zkoj.base.model.entity.PmsProblemLimit;
 import indi.snowmeow.zkoj.base.model.entity.PmsProblemTag;
 import indi.snowmeow.zkoj.base.model.req.ProblemListRequest;
-import indi.snowmeow.zkoj.base.model.vo.ProblemClassPreviewVO;
-import indi.snowmeow.zkoj.base.model.vo.ProblemClassVO;
-import indi.snowmeow.zkoj.base.model.vo.ProblemPreviewVO;
-import indi.snowmeow.zkoj.base.model.vo.ProblemTagVO;
+import indi.snowmeow.zkoj.base.model.vo.*;
 import indi.snowmeow.zkoj.base.service.*;
 import indi.snowmeow.zkoj.base.util.ListCopyUtil;
 import org.springframework.beans.BeanUtils;
@@ -37,6 +35,8 @@ public class ProblemDomainServiceImpl implements ProblemDomainService {
     @Autowired
     PmsProblemClassService pmsProblemClassService;
     @Autowired
+    PmsProblemLimitService pmsProblemLimitService;
+    @Autowired
     ProblemDomainMapper problemDomainMapper;
 
     @Override
@@ -53,6 +53,34 @@ public class ProblemDomainServiceImpl implements ProblemDomainService {
                 result = getPreviewListFromSearchTitle(request);
             }
         }
+        return result;
+    }
+
+    @Override
+    public ProblemDetailVO getDetail(long problemId) {
+        PmsProblem pmsProblem = pmsProblemService.getFromId(problemId);
+        if (null == pmsProblem) {
+            return null;
+        }
+        ProblemDetailVO result = new ProblemDetailVO();
+        BeanUtils.copyProperties(pmsProblem, result);
+        result.setCreateDate(pmsProblem.getGmtCreate());
+        result.setCount(pmsSolutionService.countSubmitFromProblemId(problemId));
+        result.setAccepted(pmsSolutionService.countAcceptedFromProblemId(problemId));
+        PmsProblemClass pmsProblemClass = pmsProblemClassService.getFromProblemId(problemId);
+        if (null != pmsProblemClass) {
+            ProblemClassPreviewVO problemClassPreviewVO = new ProblemClassPreviewVO();
+            BeanUtils.copyProperties(pmsProblemClass, problemClassPreviewVO);
+            result.setProblemClass(problemClassPreviewVO);
+        }
+        List<PmsProblemTag> pmsProblemTagList = pmsProblemTagService.listFromProblemId(problemId);
+        if (null != pmsProblemTagList) {
+            List<ProblemTagVO> tags = ListCopyUtil.copy(pmsProblemTagList, ProblemTagVO.class);
+            result.setTag(tags);
+        }
+        List<PmsProblemLimit> pmsProblemLimitList = pmsProblemLimitService.listFromProblemId(problemId);
+        List<CurrentProblemLimitVO> limits = ListCopyUtil.copy(pmsProblemLimitList, CurrentProblemLimitVO.class);
+        result.setLimit(limits);
         return result;
     }
 
