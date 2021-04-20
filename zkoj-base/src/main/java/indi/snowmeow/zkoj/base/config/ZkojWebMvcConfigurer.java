@@ -24,7 +24,7 @@ public class ZkojWebMvcConfigurer implements WebMvcConfigurer {
     @PostConstruct
     protected void initArgumentResolvers() {
         List<HandlerMethodArgumentResolver> argumentResolvers = new ArrayList<>();
-        argumentResolvers.add(new ZkojServletModelAttributeMethodProcessor(true));
+        argumentResolvers.add(new ZkojServletModelAttributeMethodProcessor(false));
         argumentResolvers.addAll(adapter.getArgumentResolvers());
         adapter.setArgumentResolvers(argumentResolvers);
     }
