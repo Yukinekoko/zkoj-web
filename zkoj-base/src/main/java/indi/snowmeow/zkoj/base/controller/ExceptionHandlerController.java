@@ -4,6 +4,8 @@ import indi.snowmeow.zkoj.base.common.base.BaseException;
 import indi.snowmeow.zkoj.base.common.base.BaseResult;
 import indi.snowmeow.zkoj.base.common.enums.ResultCodeEnum;
 import org.springframework.validation.BindException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -24,8 +26,10 @@ public class ExceptionHandlerController {
         return BaseResult.fail(e.getCode());
     }
 
-    @ExceptionHandler(BindException.class)
-    public BaseResult<Void> handleBindException(BindException e) {
+    @ExceptionHandler({BindException.class,
+            MethodArgumentNotValidException.class,
+            MissingServletRequestParameterException.class})
+    public BaseResult<Void> handleBindException(Exception e) {
         return BaseResult.fail(ResultCodeEnum.PARAM_ERROR);
     }
 
