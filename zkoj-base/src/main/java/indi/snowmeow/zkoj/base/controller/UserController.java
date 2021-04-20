@@ -1,5 +1,7 @@
 package indi.snowmeow.zkoj.base.controller;
 
+import indi.snowmeow.zkoj.api.auth.service.EncodePasswordService;
+import indi.snowmeow.zkoj.base.common.base.BaseException;
 import indi.snowmeow.zkoj.base.common.base.BaseResult;
 import indi.snowmeow.zkoj.base.common.enums.ResultCodeEnum;
 import indi.snowmeow.zkoj.base.model.dto.UserInfoUpdateDTO;
@@ -9,8 +11,10 @@ import indi.snowmeow.zkoj.base.model.vo.UserSolutionRankStatisticsVO;
 import indi.snowmeow.zkoj.base.service.SolutionDomainService;
 import indi.snowmeow.zkoj.base.service.UmsUserService;
 import indi.snowmeow.zkoj.base.service.UserDomainService;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -50,7 +54,7 @@ public class UserController {
         }
         UserInfoUpdateDTO requestDTO = new UserInfoUpdateDTO();
         BeanUtils.copyProperties(request, requestDTO);
-        umsUserService.update(requestDTO);
+        umsUserService.updateBaseInfo(requestDTO);
         return BaseResult.success();
     }
 
@@ -62,5 +66,19 @@ public class UserController {
     @GetMapping("/user/count/problem")
     public BaseResult<Map<String, Object>> getSolutionProblemStatistics(@RequestParam("username") String username) {
         return BaseResult.success(solutionDomainService.getUserSolutionProblemStatistics(username));
+    }
+
+    @PutMapping("/user/password")
+    public BaseResult<Void> updatePassword(@RequestBody Map<String, Object> requestData) {
+        String password = (String) requestData.get("password");
+        String newPassword = (String) requestData.get("new_password");
+        if (StringUtils.isEmpty(password) || StringUtils.isEmpty(newPassword)) {
+            throw new BaseException(ResultCodeEnum.PARAM_ERROR);
+        }
+        if (password.length() != 32 || newPassword.length() != 32) {
+            throw new BaseException(ResultCodeEnum.PARAM_ERROR);
+        }
+        umsUserService.updatePassword(password, newPassword);
+        return BaseResult.success();
     }
 }

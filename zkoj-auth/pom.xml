@@ -17,6 +17,10 @@
             <groupId>indi.snowmeow</groupId>
             <artifactId>zkoj-common</artifactId>
         </dependency>
+        <dependency>
+            <groupId>indi.snowmeow</groupId>
+            <artifactId>zkoj-api-auth</artifactId>
+        </dependency>
         <!-- Spring Boot -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -37,6 +41,11 @@
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+        </dependency>
+        <!-- Dubbo -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-dubbo</artifactId>
         </dependency>
         <!-- Spring Security -->
         <dependency>

@@ -16,6 +16,25 @@
             <groupId>indi.snowmeow</groupId>
             <artifactId>zkoj-common</artifactId>
         </dependency>
+        <dependency>
+            <groupId>indi.snowmeow</groupId>
+            <artifactId>zkoj-api-auth</artifactId>
+        </dependency>
+        <!-- Nacos注册服务 -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+        </dependency>
+        <!-- Nacos配置服务 -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+        </dependency>
+        <!-- Dubbo -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-dubbo</artifactId>
+        </dependency>
         <!-- lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>

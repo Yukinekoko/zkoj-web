@@ -13,5 +13,10 @@ public interface UmsUserMapper extends BaseMapper<UmsUser> {
     /**
      * 更新用户信息
      * */
-    int update(UserInfoUpdateDTO requestDTO);
+    int updateBaseInfo(UserInfoUpdateDTO requestDTO);
+
+    /**
+     * 更新密码
+     * */
+    int updatePassword(Long userId, String password);
 }

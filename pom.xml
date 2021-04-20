@@ -9,6 +9,8 @@
         <module>zkoj-temp</module>
         <module>zkoj-auth</module>
         <module>zkoj-gateway</module>
+        <module>zkoj-api</module>
+        <module>zkoj-api-auth</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -35,6 +37,11 @@
             <dependency>
                 <groupId>indi.snowmeow</groupId>
                 <artifactId>zkoj-common</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>indi.snowmeow</groupId>
+                <artifactId>zkoj-api-auth</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
 

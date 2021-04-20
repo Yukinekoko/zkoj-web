@@ -15,7 +15,12 @@ public interface UmsUserService {
     UmsUser getFromUsername(String username);
 
     /**
-     * 更新用户信息
+     * 更新用户基本信息
      * */
-    void update(UserInfoUpdateDTO requestDTO);
+    void updateBaseInfo(UserInfoUpdateDTO requestDTO);
+
+    /**
+     * 更新密码
+     * */
+    void updatePassword(String oldPassword, String newPassword);
 }
