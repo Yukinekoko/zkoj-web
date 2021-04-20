@@ -3,6 +3,7 @@ package indi.snowmeow.zkoj.base.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import indi.snowmeow.zkoj.base.dao.PmsSolutionMapper;
 import indi.snowmeow.zkoj.base.model.entity.PmsSolution;
+import indi.snowmeow.zkoj.base.model.vo.SolutionRankVO;
 import indi.snowmeow.zkoj.base.service.PmsSolutionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,10 +40,5 @@ public class PmsSolutionServiceImpl implements PmsSolutionService {
         QueryWrapper<PmsSolution> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("user_id", userId);
         return pmsSolutionMapper.selectList(queryWrapper);
-    }
-
-    @Override
-    public int getRankFromUserId(long userId) {
-        return pmsSolutionMapper.getRankFromUserId(userId);
     }
 }

@@ -1,6 +1,7 @@
 package indi.snowmeow.zkoj.base.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import indi.snowmeow.zkoj.base.model.dto.UserInfoUpdateDTO;
 import indi.snowmeow.zkoj.base.model.entity.UmsUser;
 
 /**
@@ -8,4 +9,9 @@ import indi.snowmeow.zkoj.base.model.entity.UmsUser;
  * @date 2021/4/17
  */
 public interface UmsUserMapper extends BaseMapper<UmsUser> {
+
+    /**
+     * 更新用户信息
+     * */
+    int update(UserInfoUpdateDTO requestDTO);
 }

@@ -6,6 +6,7 @@ import indi.snowmeow.zkoj.base.model.entity.PmsSolution;
 import indi.snowmeow.zkoj.base.model.entity.UmsUser;
 import indi.snowmeow.zkoj.base.model.vo.UserInfoVO;
 import indi.snowmeow.zkoj.base.service.PmsSolutionService;
+import indi.snowmeow.zkoj.base.service.SolutionDomainService;
 import indi.snowmeow.zkoj.base.service.UmsUserService;
 import indi.snowmeow.zkoj.base.service.UserDomainService;
 import org.springframework.beans.BeanUtils;
@@ -26,6 +27,8 @@ public class UserDomainServiceImpl implements UserDomainService {
     UmsUserService umsUserService;
     @Autowired
     PmsSolutionService pmsSolutionService;
+    @Autowired
+    SolutionDomainService solutionDomainService;
 
     @Override
     public UserInfoVO getInfoFromUsername(String username) {
@@ -50,7 +53,7 @@ public class UserDomainServiceImpl implements UserDomainService {
         }
         userInfoVO.setSubmitCount(submitCount);
         userInfoVO.setAcceptedCount(acceptedCount);
-        userInfoVO.setRank(pmsSolutionService.getRankFromUserId(umsUser.getId()));
+        userInfoVO.setRank(solutionDomainService.getRankFromUserId(umsUser.getId()));
         return userInfoVO;
     }
 }

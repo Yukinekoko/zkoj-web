@@ -1,6 +1,7 @@
 package indi.snowmeow.zkoj.base.service;
 
 import indi.snowmeow.zkoj.base.model.entity.PmsSolution;
+import indi.snowmeow.zkoj.base.model.vo.SolutionRankVO;
 
 import java.util.List;
 
@@ -34,8 +35,4 @@ public interface PmsSolutionService {
      * */
     List<PmsSolution> getFromUserId(long userId);
 
-    /**
-     * 获取指定用户的AC数量排名
-     * */
-    int getRankFromUserId(long userId);
 }

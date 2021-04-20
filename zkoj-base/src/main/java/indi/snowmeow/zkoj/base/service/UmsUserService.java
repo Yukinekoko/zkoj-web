@@ -1,5 +1,6 @@
 package indi.snowmeow.zkoj.base.service;
 
+import indi.snowmeow.zkoj.base.model.dto.UserInfoUpdateDTO;
 import indi.snowmeow.zkoj.base.model.entity.UmsUser;
 
 /**
@@ -12,4 +13,9 @@ public interface UmsUserService {
      * 根据用户名获取用户信息
      * */
     UmsUser getFromUsername(String username);
+
+    /**
+     * 更新用户信息
+     * */
+    void update(UserInfoUpdateDTO requestDTO);
 }

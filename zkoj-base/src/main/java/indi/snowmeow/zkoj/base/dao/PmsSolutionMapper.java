@@ -2,7 +2,10 @@ package indi.snowmeow.zkoj.base.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import indi.snowmeow.zkoj.base.model.entity.PmsSolution;
+import indi.snowmeow.zkoj.base.model.vo.SolutionRankVO;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * @author snowmeow
@@ -28,10 +31,4 @@ public interface PmsSolutionMapper extends BaseMapper<PmsSolution> {
      * 获取用户指定题目的做题状态：0 - 未尝试；1 - AC；2 - 未完成
      * */
     byte getPreviewStatus(@Param("problem_id") long problemId, @Param("user_id") long userId);
-
-    /**
-     * 获取指定用户的AC数量排名
-     * */
-    int getRankFromUserId(long userId);
-
 }

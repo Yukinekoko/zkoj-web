@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="indi.snowmeow.zkoj.base.dao.SolutionDomainMapper">
+
+    <resultMap id="SolutionRankResultMap" type="indi.snowmeow.zkoj.base.model.vo.SolutionRankVO">
+        <result property="username" column="username"/>
+        <result property="name" column="name"/>
+        <result property="accepted" column="accepted"/>
+        <result property="count" column="count"/>
+        <result property="rank" column="rank_no"/>
+    </resultMap>
+
+    <resultMap id="UserSolutionRankStatisticsResultMap" type="indi.snowmeow.zkoj.base.model.vo.UserSolutionRankStatisticsVO">
+        <result property="acceptedCount" column="accepted"/>
+        <result property="submitCount" column="count"/>
+        <result property="rank" column="rank_no"/>
+    </resultMap>
+
+    <select id="getRankFromUserId" resultType="int">
+        select rank_no
+        from (select user_id, @rank:=@rank+1 as rank_no
+              from (select distinct problem_id, status_id, user_id, count(id) as accepted
+                    from pms_solution
+                    where status_id = 1
+                    group by user_id
+                    order by accepted desc) as p, (select @rank := 0) as r) as p
+        where user_id = #{userId};
+    </select>
+
+    <select id="listByRank" resultMap="SolutionRankResultMap">
+        select user.username, user.name, rank_no, accepted, count(solution.id) as count
+        from (select user_id, @rank:=@rank+1 as rank_no, accepted
+              from (select distinct problem_id, status_id, user_id, count(id) as accepted
+                    from pms_solution
+                    where status_id = 1
+                    group by user_id
+                    order by accepted desc) as p,
+                   (select @rank := 0) as r
+              limit #{offset}, #{limit}) as a
+                 left join pms_solution as solution on a.user_id = solution.user_id
+                 left join ums_user as user on user.id = a.user_id
+        group by a.user_id
+    </select>
+
+    <select id="getUserSolutionRankStatistics" resultMap="UserSolutionRankStatisticsResultMap">
+        select rank_no, accepted, count(solution.id) as count
+        from (select user_id, @rank := @rank + 1 as rank_no, accepted
+              from (select distinct problem_id, status_id, user_id, count(id) as accepted
+                    from pms_solution
+                    where status_id = 1
+                    group by user_id
+                    order by accepted desc) as p,
+                   (select @rank := 0) as r) as a
+                 left join pms_solution as solution on a.user_id = solution.user_id
+        where a.user_id = #{userId};
+    </select>
+
+    <select id="getUserSolutionProblemStatistics" resultType="map">
+        select problem_id, pp.title, min(status_id) as status_id
+        from pms_solution
+                 left join pms_problem pp on pms_solution.problem_id = pp.id
+        where pms_solution.user_id = #{userId}
+        group by pms_solution.problem_id;
+    </select>
+
+</mapper>
