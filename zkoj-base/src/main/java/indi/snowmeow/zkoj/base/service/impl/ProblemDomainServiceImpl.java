@@ -7,16 +7,14 @@ import indi.snowmeow.zkoj.base.model.entity.PmsProblem;
 import indi.snowmeow.zkoj.base.model.entity.PmsProblemClass;
 import indi.snowmeow.zkoj.base.model.entity.PmsProblemLimit;
 import indi.snowmeow.zkoj.base.model.entity.PmsProblemTag;
-import indi.snowmeow.zkoj.base.model.req.ProblemListRequest;
 import indi.snowmeow.zkoj.base.model.vo.*;
 import indi.snowmeow.zkoj.base.service.*;
-import indi.snowmeow.zkoj.base.util.ListCopyUtil;
+import indi.snowmeow.zkoj.base.common.util.BeanUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -75,11 +73,11 @@ public class ProblemDomainServiceImpl implements ProblemDomainService {
         }
         List<PmsProblemTag> pmsProblemTagList = pmsProblemTagService.listFromProblemId(problemId);
         if (null != pmsProblemTagList) {
-            List<ProblemTagVO> tags = ListCopyUtil.copy(pmsProblemTagList, ProblemTagVO.class);
+            List<ProblemTagVO> tags = BeanUtil.copy(pmsProblemTagList, ProblemTagVO.class);
             result.setTag(tags);
         }
         List<PmsProblemLimit> pmsProblemLimitList = pmsProblemLimitService.listFromProblemId(problemId);
-        List<CurrentProblemLimitVO> limits = ListCopyUtil.copy(pmsProblemLimitList, CurrentProblemLimitVO.class);
+        List<CurrentProblemLimitVO> limits = BeanUtil.copy(pmsProblemLimitList, CurrentProblemLimitVO.class);
         result.setLimit(limits);
         return result;
     }
@@ -112,7 +110,7 @@ public class ProblemDomainServiceImpl implements ProblemDomainService {
         List<PmsProblemTag> pmsProblemTagList = pmsProblemTagService.listFromProblemId(id);
         if (!pmsProblemTagList.isEmpty()) {
             List<ProblemTagVO> pmsProblemTagVOList
-                    = ListCopyUtil.copy(pmsProblemTagList, ProblemTagVO.class);
+                    = BeanUtil.copy(pmsProblemTagList, ProblemTagVO.class);
             result.setTag(pmsProblemTagVOList);
         }
         if (null != userId) {

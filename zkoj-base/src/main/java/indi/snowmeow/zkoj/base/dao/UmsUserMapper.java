@@ -19,4 +19,6 @@ public interface UmsUserMapper extends BaseMapper<UmsUser> {
      * 更新密码
      * */
     int updatePassword(Long userId, String password);
+
+    int insert(UmsUser user);
 }

@@ -5,9 +5,12 @@ import indi.snowmeow.zkoj.api.auth.service.EncodePasswordService;
 import indi.snowmeow.zkoj.base.common.base.BaseException;
 import indi.snowmeow.zkoj.base.common.enums.ResultCodeEnum;
 import indi.snowmeow.zkoj.base.common.util.AuthenticationUtil;
+import indi.snowmeow.zkoj.base.common.util.BeanUtil;
+import indi.snowmeow.zkoj.base.common.util.IpAddressUtil;
 import indi.snowmeow.zkoj.base.common.util.JwtUtil;
 import indi.snowmeow.zkoj.base.dao.UmsUserMapper;
 import indi.snowmeow.zkoj.base.model.dto.UserInfoUpdateDTO;
+import indi.snowmeow.zkoj.base.model.dto.UserRegisterDTO;
 import indi.snowmeow.zkoj.base.model.entity.UmsUser;
 import indi.snowmeow.zkoj.base.service.UmsUserService;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -69,5 +72,25 @@ public class UmsUserServiceImpl implements UmsUserService {
             LOGGER.error("User Password Update Error - UserId: {}", user.getId());
             throw new BaseException(ResultCodeEnum.SYSTEM_ERROR);
         }
+    }
+
+    @Override
+    public long insert(UserRegisterDTO requestDTO) {
+        UmsUser verifyUsername = getFromUsername(requestDTO.getUsername());
+        if (null != verifyUsername) {
+            throw new BaseException(ResultCodeEnum.USER_USERNAME_EXIST);
+        }
+        UmsUser user = new UmsUser();
+        user.setUsername(requestDTO.getUsername());
+        user.setName(requestDTO.getName());
+        user.setPassword(encodePasswordService.encodePassword(requestDTO.getPassword()));
+        user.setCreateIp(IpAddressUtil.getIpAddress());
+        user.setLastIp(user.getCreateIp());
+        user.setStatus((byte) 1);
+        if (umsUserMapper.insert(user) != 1) {
+            LOGGER.error("User Insert Error - Username: {}", requestDTO.getUsername());
+            throw new BaseException(ResultCodeEnum.SYSTEM_ERROR);
+        }
+        return user.getId();
     }
 }

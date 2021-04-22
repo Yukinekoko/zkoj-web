@@ -20,6 +20,11 @@
             <groupId>indi.snowmeow</groupId>
             <artifactId>zkoj-api-auth</artifactId>
         </dependency>
+        <!-- test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+        </dependency>
         <!-- Nacos注册服务 -->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>

@@ -1,7 +1,6 @@
 package indi.snowmeow.zkoj.base.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import indi.snowmeow.zkoj.base.common.util.AuthenticationUtil;
 import indi.snowmeow.zkoj.base.common.util.JwtUtil;
@@ -9,9 +8,7 @@ import indi.snowmeow.zkoj.base.dao.PmsProblemMapper;
 import indi.snowmeow.zkoj.base.model.dto.ProblemCountDTO;
 import indi.snowmeow.zkoj.base.model.dto.ProblemListRequestDTO;
 import indi.snowmeow.zkoj.base.model.entity.PmsProblem;
-import indi.snowmeow.zkoj.base.model.vo.ProblemPreviewVO;
 import indi.snowmeow.zkoj.base.service.PmsProblemService;
-import indi.snowmeow.zkoj.base.util.ListCopyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -24,7 +24,7 @@ public class UmsUser implements Serializable {
 
     private String email;
 
-    private String description;
+    private String introduce;
 
     private Byte status;
 

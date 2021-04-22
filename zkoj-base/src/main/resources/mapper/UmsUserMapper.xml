@@ -7,7 +7,7 @@
         <set>
             <if test="name != null">name = #{name},</if>
             <if test="email != null">email = #{email},</if>
-            <if test="description != null">description = #{description}</if>
+            <if test="description != null">introduce = #{introduce}</if>
         </set>
         where id = #{userId}
         limit 1
@@ -16,5 +16,20 @@
     <update id="updatePassword">
         update ums_user set password = #{password} where id = #{userId} limit 1
     </update>
+    
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into ums_user
+        <set>
+            username = #{username},
+            password = #{password},
+            name = #{name},
+            status = 1,
+            create_ip = #{createIp},
+            last_ip = #{lastIp},
+            <if test="faceUrl != null">face_url = #{faceUrl},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="introduce != null">introduce = #{introduce}</if>
+        </set>
+    </insert>
 
 </mapper>

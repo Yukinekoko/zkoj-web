@@ -27,7 +27,7 @@ public class UmsUser implements Serializable {
     /* 邮箱 */
     private String email;
     /* 简介 */
-    private String description;
+    private String introduce;
     /* 账号状态 */
     private Byte status;
     /* 创建IP */

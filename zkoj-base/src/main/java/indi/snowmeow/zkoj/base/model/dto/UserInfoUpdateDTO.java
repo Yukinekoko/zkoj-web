@@ -15,6 +15,6 @@ public class UserInfoUpdateDTO {
 
     private String email;
 
-    private String description;
+    private String introduce;
 
 }

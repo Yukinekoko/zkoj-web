@@ -17,13 +17,15 @@ public enum ResultCodeEnum {
     PARAM_ERROR(10001, "参数错误"),
     TOKEN_ERROR(10002, "token异常"),
     SYSTEM_ERROR(10003, "系统异常"),
+    SERVICE_NOT_AVAILABLE(10004, "服务咱不可用"),
     /** 用户异常 */
     USER_ERROR(20001, "用户异常"),
     USER_ACCOUNT_NOT_EXIST(20002, "账号不存在"),
     USER_NOT_LOGIN(20003, "用户未登录"),
     USER_LOGIN_FAILURE(20004, "登录失败"),
     USER_PASSWORD_REPEAT(20005, "密码重复"),
-    USER_PASSWORD_ERROR(20006, "密码错误")
+    USER_PASSWORD_ERROR(20006, "密码错误"),
+    USER_USERNAME_EXIST(20007, "用户名已存在")
     ;
 
     private final int code;

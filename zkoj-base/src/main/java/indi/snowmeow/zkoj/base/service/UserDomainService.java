@@ -1,5 +1,6 @@
 package indi.snowmeow.zkoj.base.service;
 
+import indi.snowmeow.zkoj.base.model.dto.UserRegisterDTO;
 import indi.snowmeow.zkoj.base.model.vo.UserInfoVO;
 
 /**
@@ -12,4 +13,9 @@ public interface UserDomainService {
      * 根据username获取指定用户的个人信息
      * */
     UserInfoVO getInfoFromUsername(String username);
+
+    /**
+     * 用户注册
+     * */
+    void register(UserRegisterDTO requestDTO);
 }

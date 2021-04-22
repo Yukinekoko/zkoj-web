@@ -22,7 +22,7 @@ public class UserInfoVO {
 
     private String email;
 
-    private String description;
+    private String introduce;
 
     private Date createDate;
 

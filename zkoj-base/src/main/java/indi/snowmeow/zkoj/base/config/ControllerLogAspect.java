@@ -1,6 +1,6 @@
 package indi.snowmeow.zkoj.base.config;
 
-import indi.snowmeow.zkoj.base.util.IpAddressUtil;
+import indi.snowmeow.zkoj.base.common.util.IpAddressUtil;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.slf4j.Logger;

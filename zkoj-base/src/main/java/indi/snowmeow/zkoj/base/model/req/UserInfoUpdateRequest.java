@@ -17,5 +17,5 @@ public class UserInfoUpdateRequest {
     @Email
     private String email;
     @Size(max = 255)
-    private String description;
+    private String introduce;
 }

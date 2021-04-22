@@ -1,6 +1,7 @@
 package indi.snowmeow.zkoj.base.service;
 
 import indi.snowmeow.zkoj.base.model.dto.UserInfoUpdateDTO;
+import indi.snowmeow.zkoj.base.model.dto.UserRegisterDTO;
 import indi.snowmeow.zkoj.base.model.entity.UmsUser;
 
 /**
@@ -23,4 +24,9 @@ public interface UmsUserService {
      * 更新密码
      * */
     void updatePassword(String oldPassword, String newPassword);
+
+    /**
+     * 新增用户
+     * */
+    long insert(UserRegisterDTO requestDTO);
 }

@@ -1,17 +1,18 @@
 package indi.snowmeow.zkoj.base.controller;
 
-import indi.snowmeow.zkoj.api.auth.service.EncodePasswordService;
 import indi.snowmeow.zkoj.base.common.base.BaseException;
 import indi.snowmeow.zkoj.base.common.base.BaseResult;
 import indi.snowmeow.zkoj.base.common.enums.ResultCodeEnum;
+import indi.snowmeow.zkoj.base.common.util.BeanUtil;
 import indi.snowmeow.zkoj.base.model.dto.UserInfoUpdateDTO;
+import indi.snowmeow.zkoj.base.model.dto.UserRegisterDTO;
 import indi.snowmeow.zkoj.base.model.req.UserInfoUpdateRequest;
+import indi.snowmeow.zkoj.base.model.req.UserRegisterRequest;
 import indi.snowmeow.zkoj.base.model.vo.UserInfoVO;
 import indi.snowmeow.zkoj.base.model.vo.UserSolutionRankStatisticsVO;
 import indi.snowmeow.zkoj.base.service.SolutionDomainService;
 import indi.snowmeow.zkoj.base.service.UmsUserService;
 import indi.snowmeow.zkoj.base.service.UserDomainService;
-import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -49,7 +50,7 @@ public class UserController {
      * */
     @PutMapping("/user")
     public BaseResult<Void> updateUserInfo(@Valid @RequestBody UserInfoUpdateRequest request) {
-        if (null == request.getName() && null == request.getEmail() && null == request.getDescription()) {
+        if (null == request.getName() && null == request.getEmail() && null == request.getIntroduce()) {
             return BaseResult.fail(ResultCodeEnum.PARAM_ERROR);
         }
         UserInfoUpdateDTO requestDTO = new UserInfoUpdateDTO();
@@ -79,6 +80,13 @@ public class UserController {
             throw new BaseException(ResultCodeEnum.PARAM_ERROR);
         }
         umsUserService.updatePassword(password, newPassword);
+        return BaseResult.success();
+    }
+
+    @PostMapping("/register")
+    public BaseResult<Void> register(@Valid @RequestBody UserRegisterRequest requestBody) {
+        UserRegisterDTO requestDTO = BeanUtil.copy(requestBody, UserRegisterDTO.class);
+        userDomainService.register(requestDTO);
         return BaseResult.success();
     }
 }

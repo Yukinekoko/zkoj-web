@@ -2,16 +2,18 @@ package indi.snowmeow.zkoj.base.service.impl;
 
 import indi.snowmeow.zkoj.base.common.base.BaseException;
 import indi.snowmeow.zkoj.base.common.enums.ResultCodeEnum;
+import indi.snowmeow.zkoj.base.common.util.BeanUtil;
+import indi.snowmeow.zkoj.base.common.util.IpAddressUtil;
+import indi.snowmeow.zkoj.base.dao.UmsUserRoleMappingMapper;
+import indi.snowmeow.zkoj.base.model.dto.UserRegisterDTO;
 import indi.snowmeow.zkoj.base.model.entity.PmsSolution;
 import indi.snowmeow.zkoj.base.model.entity.UmsUser;
 import indi.snowmeow.zkoj.base.model.vo.UserInfoVO;
-import indi.snowmeow.zkoj.base.service.PmsSolutionService;
-import indi.snowmeow.zkoj.base.service.SolutionDomainService;
-import indi.snowmeow.zkoj.base.service.UmsUserService;
-import indi.snowmeow.zkoj.base.service.UserDomainService;
+import indi.snowmeow.zkoj.base.service.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Iterator;
 import java.util.List;
@@ -29,6 +31,10 @@ public class UserDomainServiceImpl implements UserDomainService {
     PmsSolutionService pmsSolutionService;
     @Autowired
     SolutionDomainService solutionDomainService;
+    @Autowired
+    UmsUserRoleMappingService umsUserRoleMappingService;
+    @Autowired
+    UmsUserRoleMappingMapper userRoleMappingMapper;
 
     @Override
     public UserInfoVO getInfoFromUsername(String username) {
@@ -55,5 +61,12 @@ public class UserDomainServiceImpl implements UserDomainService {
         userInfoVO.setAcceptedCount(acceptedCount);
         userInfoVO.setRank(solutionDomainService.getRankFromUserId(umsUser.getId()));
         return userInfoVO;
+    }
+
+    @Transactional
+    @Override
+    public void register(UserRegisterDTO requestDTO) {
+        long id = umsUserService.insert(requestDTO);
+        umsUserRoleMappingService.insert(id, 1L);
     }
 }
