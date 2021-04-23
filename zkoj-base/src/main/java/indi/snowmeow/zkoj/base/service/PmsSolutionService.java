@@ -13,6 +13,10 @@ import java.util.List;
 public interface PmsSolutionService {
 
     /**
+     * 获取指定评测对象（公开题目）
+     * */
+    PmsSolution findByPublic(long id);
+    /**
      * 获取指定题目的评测总数
      * @param problemId - 题目ID
      * @return count - 评测总数

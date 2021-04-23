@@ -1,10 +1,7 @@
 package indi.snowmeow.zkoj.base.service;
 
 import indi.snowmeow.zkoj.base.model.dto.SolutionListSelectDTO;
-import indi.snowmeow.zkoj.base.model.vo.SolutionPreviewVO;
-import indi.snowmeow.zkoj.base.model.vo.SolutionProblemVO;
-import indi.snowmeow.zkoj.base.model.vo.SolutionRankVO;
-import indi.snowmeow.zkoj.base.model.vo.UserSolutionRankStatisticsVO;
+import indi.snowmeow.zkoj.base.model.vo.*;
 
 import java.util.List;
 import java.util.Map;
@@ -46,4 +43,9 @@ public interface SolutionDomainService {
      * 获取评测列表
      * */
     List<SolutionPreviewVO> listPreview(SolutionListSelectDTO requestDTO);
+
+    /**
+     * 获取评测详细
+     * */
+    SolutionDetailVO getDetail(long solutionId);
 }

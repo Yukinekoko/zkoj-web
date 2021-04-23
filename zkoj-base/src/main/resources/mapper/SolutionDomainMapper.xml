@@ -39,7 +39,7 @@
             <result property="name" column="language_name"/>
         </association>
     </resultMap>
-
+    
     <select id="getRankFromUserId" resultType="int">
         select rank_no
         from (select user_id, @rank:=@rank+1 as rank_no

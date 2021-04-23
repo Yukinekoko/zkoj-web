@@ -14,6 +14,11 @@ import java.util.List;
  */
 public interface PmsSolutionMapper extends BaseMapper<PmsSolution> {
 
+
+    /**
+     * 获取评测对象（公开题目）
+     * */
+    PmsSolution findByPublic(long id);
     /**
      * 获取指定题目的评测总数
      * @param problemId - 题目ID

@@ -2,14 +2,14 @@ package indi.snowmeow.zkoj.base.service.impl;
 
 import indi.snowmeow.zkoj.base.common.base.BaseException;
 import indi.snowmeow.zkoj.base.common.enums.ResultCodeEnum;
+import indi.snowmeow.zkoj.base.common.util.AuthenticationUtil;
+import indi.snowmeow.zkoj.base.common.util.BeanUtil;
+import indi.snowmeow.zkoj.base.common.util.JwtUtil;
 import indi.snowmeow.zkoj.base.dao.SolutionDomainMapper;
 import indi.snowmeow.zkoj.base.model.dto.SolutionListSelectDTO;
-import indi.snowmeow.zkoj.base.model.entity.UmsUser;
-import indi.snowmeow.zkoj.base.model.vo.SolutionPreviewVO;
-import indi.snowmeow.zkoj.base.model.vo.SolutionRankVO;
-import indi.snowmeow.zkoj.base.model.vo.UserSolutionRankStatisticsVO;
-import indi.snowmeow.zkoj.base.service.SolutionDomainService;
-import indi.snowmeow.zkoj.base.service.UmsUserService;
+import indi.snowmeow.zkoj.base.model.entity.*;
+import indi.snowmeow.zkoj.base.model.vo.*;
+import indi.snowmeow.zkoj.base.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +29,16 @@ public class SolutionDomainServiceImpl implements SolutionDomainService {
     SolutionDomainMapper solutionDomainMapper;
     @Autowired
     UmsUserService umsUserService;
+    @Autowired
+    PmsSolutionService pmsSolutionService;
+    @Autowired
+    PmsSolutionSourceCodeService pmsSolutionSourceCodeService;
+    @Autowired
+    PmsSolutionStatusService pmsSolutionStatusService;
+    @Autowired
+    PmsLanguageService pmsLanguageService;
+    @Autowired
+    PmsProblemService pmsProblemService;
 
     @Override
     public int getRankFromUserId(long userId) {
@@ -43,7 +53,7 @@ public class SolutionDomainServiceImpl implements SolutionDomainService {
 
     @Override
     public UserSolutionRankStatisticsVO getUserSolutionRankStatistics(String username) {
-        UmsUser user = umsUserService.getFromUsername(username);
+        UmsUser user = umsUserService.findFromUsername(username);
         if (user == null) {
             throw new BaseException(ResultCodeEnum.USER_ACCOUNT_NOT_EXIST);
         }
@@ -52,7 +62,7 @@ public class SolutionDomainServiceImpl implements SolutionDomainService {
 
     @Override
     public Map<String, Object> getUserSolutionProblemStatistics(String username) {
-        UmsUser user = umsUserService.getFromUsername(username);
+        UmsUser user = umsUserService.findFromUsername(username);
         if (user == null) {
             throw new BaseException(ResultCodeEnum.USER_ACCOUNT_NOT_EXIST);
         }
@@ -79,6 +89,46 @@ public class SolutionDomainServiceImpl implements SolutionDomainService {
     public List<SolutionPreviewVO> listPreview(SolutionListSelectDTO requestDTO) {
         requestDTO.setOffset((requestDTO.getPage() - 1) * requestDTO.getLimit());
         return solutionDomainMapper.listPreview(requestDTO);
+    }
+
+    @Override
+    public SolutionDetailVO getDetail(long solutionId) {
+        PmsSolution solutionEntity = pmsSolutionService.findByPublic(solutionId);
+        if (null == solutionEntity) {
+            return null;
+        }
+        SolutionDetailVO result = BeanUtil.copy(solutionEntity, SolutionDetailVO.class);
+        // sourceCode
+        if (AuthenticationUtil.isLogin()) {
+            String token = AuthenticationUtil.getToken();
+            if (solutionEntity.getUserId().equals(JwtUtil.getUserId(token))) {
+                PmsSolutionSourceCode codeEntity
+                        = pmsSolutionSourceCodeService.findFromSolutionId(solutionId);
+                result.setSourceCode(codeEntity.getSourceCode());
+            }
+
+        }
+        // status
+        PmsSolutionStatus statusEntity
+                = pmsSolutionStatusService.find(solutionEntity.getStatusId());
+        SolutionStatusVO statusVO = new SolutionStatusVO();
+        statusVO.setId(statusEntity.getId());
+        statusVO.setShortName(statusEntity.getName());
+        statusVO.setName(statusEntity.getIntroduce());
+        result.setStatus(statusVO);
+        // language
+        PmsLanguage languageEntity =
+                pmsLanguageService.find(solutionEntity.getLanguageId());
+        result.setLanguage(BeanUtil.copy(languageEntity, LanguageVO.class));
+        // problem
+        PmsProblem problemEntity =
+                pmsProblemService.getFromId(solutionEntity.getProblemId());
+        result.setProblem(BeanUtil.copy(problemEntity, SolutionProblemVO.class));
+        // user
+        UmsUser userEntity =
+                umsUserService.find(solutionEntity.getUserId());
+        result.setUser(BeanUtil.copy(userEntity, SolutionUserVO.class));
+        return result;
     }
 
 }

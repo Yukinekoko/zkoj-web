@@ -32,4 +32,9 @@ public class PmsLanguageServiceImpl implements PmsLanguageService {
         List<LanguageVO> result = BeanUtil.copy(languageEntities, LanguageVO.class);
         return result;
     }
+
+    @Override
+    public PmsLanguage find(long id) {
+        return pmsLanguageMapper.selectById(id);
+    }
 }

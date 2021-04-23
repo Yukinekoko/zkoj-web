@@ -22,6 +22,11 @@ public class PmsSolutionServiceImpl implements PmsSolutionService {
     PmsSolutionMapper pmsSolutionMapper;
 
     @Override
+    public PmsSolution findByPublic(long id) {
+        return pmsSolutionMapper.findByPublic(id);
+    }
+
+    @Override
     public int countSubmitFromProblemId(long problemId) {
         return pmsSolutionMapper.countSubmitFromProblemId(problemId);
     }

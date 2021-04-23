@@ -2,8 +2,6 @@ package indi.snowmeow.zkoj.base.service.impl;
 
 import indi.snowmeow.zkoj.base.common.base.BaseException;
 import indi.snowmeow.zkoj.base.common.enums.ResultCodeEnum;
-import indi.snowmeow.zkoj.base.common.util.BeanUtil;
-import indi.snowmeow.zkoj.base.common.util.IpAddressUtil;
 import indi.snowmeow.zkoj.base.dao.UmsUserRoleMappingMapper;
 import indi.snowmeow.zkoj.base.model.dto.UserRegisterDTO;
 import indi.snowmeow.zkoj.base.model.entity.PmsSolution;
@@ -15,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -38,7 +35,7 @@ public class UserDomainServiceImpl implements UserDomainService {
 
     @Override
     public UserInfoVO getInfoFromUsername(String username) {
-        UmsUser umsUser = umsUserService.getFromUsername(username);
+        UmsUser umsUser = umsUserService.findFromUsername(username);
         if (null == umsUser) {
             throw new BaseException(ResultCodeEnum.USER_ACCOUNT_NOT_EXIST);
         }

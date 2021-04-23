@@ -11,6 +11,14 @@
         <result property="rank" column="rank_no"/>
     </resultMap>
 
+    <select id="findByPublic" resultType="indi.snowmeow.zkoj.base.model.entity.PmsSolution">
+        select pms_solution.id, problem_id, pms_solution.user_id, time, memory, submit_date, status_id, language_id, error_message
+        from pms_solution
+        left join pms_problem as problem on pms_solution.problem_id = problem.id
+        where problem.is_private = false
+        limit 1
+    </select>
+
     <!-- 获取指定题目的评测总数 -->
     <select id="countSubmitFromProblemId" resultType="int">
         select count(id) as count

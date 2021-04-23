@@ -5,7 +5,6 @@ import indi.snowmeow.zkoj.api.auth.service.EncodePasswordService;
 import indi.snowmeow.zkoj.base.common.base.BaseException;
 import indi.snowmeow.zkoj.base.common.enums.ResultCodeEnum;
 import indi.snowmeow.zkoj.base.common.util.AuthenticationUtil;
-import indi.snowmeow.zkoj.base.common.util.BeanUtil;
 import indi.snowmeow.zkoj.base.common.util.IpAddressUtil;
 import indi.snowmeow.zkoj.base.common.util.JwtUtil;
 import indi.snowmeow.zkoj.base.dao.UmsUserMapper;
@@ -35,7 +34,12 @@ public class UmsUserServiceImpl implements UmsUserService {
     UmsUserMapper umsUserMapper;
 
     @Override
-    public UmsUser getFromUsername(String username) {
+    public UmsUser find(long id) {
+        return umsUserMapper.selectById(id);
+    }
+
+    @Override
+    public UmsUser findFromUsername(String username) {
         QueryWrapper<UmsUser> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("username", username);
         return umsUserMapper.selectOne(queryWrapper);
@@ -76,7 +80,7 @@ public class UmsUserServiceImpl implements UmsUserService {
 
     @Override
     public long insert(UserRegisterDTO requestDTO) {
-        UmsUser verifyUsername = getFromUsername(requestDTO.getUsername());
+        UmsUser verifyUsername = findFromUsername(requestDTO.getUsername());
         if (null != verifyUsername) {
             throw new BaseException(ResultCodeEnum.USER_USERNAME_EXIST);
         }

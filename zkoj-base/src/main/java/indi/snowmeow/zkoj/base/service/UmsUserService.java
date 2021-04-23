@@ -10,10 +10,11 @@ import indi.snowmeow.zkoj.base.model.entity.UmsUser;
  */
 public interface UmsUserService {
 
+    UmsUser find(long id);
     /**
      * 根据用户名获取用户信息
      * */
-    UmsUser getFromUsername(String username);
+    UmsUser findFromUsername(String username);
 
     /**
      * 更新用户基本信息

@@ -14,7 +14,7 @@ public class PmsSolutionSourceCode implements Serializable {
 
     private Long solutionId;
 
-    private String sourceCodee;
+    private String sourceCode;
 
     private static final long serialVersionUID = 1L;
 }
