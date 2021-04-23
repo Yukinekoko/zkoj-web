@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="indi.snowmeow.zkoj.base.dao.ProblemClassDomainMapper">
+
+    <select id="list" resultType="indi.snowmeow.zkoj.base.model.vo.ProblemClassVO">
+        select pms_problem_class.id, pms_problem_class.name, pms_problem_class.introduce, count(pp.id) as count
+        from pms_problem_class
+                 left join pms_problem pp on pms_problem_class.id = pp.class_id and pp.is_private = false
+        group by pms_problem_class.id
+    </select>
+</mapper>

@@ -4,7 +4,7 @@
 
     <!-- 获取问题列表 -->
     <select id="list" resultType="indi.snowmeow.zkoj.base.model.entity.PmsProblem">
-        select id, title, description, sample_input, sample_output, is_spj, hint, problem.gmt_create, problem.gmt_modified, difficulty, class_id,
+        select id, title, introduce, sample_input, sample_output, is_spj, hint, problem.gmt_create, problem.gmt_modified, difficulty, class_id,
         user_id, is_private
         from pms_problem as problem
         <if test="request.classId != null">

@@ -16,7 +16,7 @@ public class PmsProblemClass implements Serializable {
 
     private String name;
 
-    private String description;
+    private String introduce;
 
     private Date gmtCreate;
 
