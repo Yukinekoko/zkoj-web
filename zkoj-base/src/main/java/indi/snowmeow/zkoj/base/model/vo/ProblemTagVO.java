@@ -2,11 +2,13 @@ package indi.snowmeow.zkoj.base.model.vo;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import lombok.Data;
 
 /**
  * @author snowmeow
  * @date 2021/2/12
  */
+@Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class ProblemTagVO {
 
@@ -14,20 +16,7 @@ public class ProblemTagVO {
     private Long id;
     /* 算法标签名 */
     private String name;
+    /* 用于该标签的问题总数 */
+    private int count;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 }

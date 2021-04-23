@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="indi.snowmeow.zkoj.base.dao.ProblemTagDomainMapper">
+
+    <select id="list" resultType="indi.snowmeow.zkoj.base.model.vo.ProblemTagVO">
+        select pms_problem_tag.id, pms_problem_tag.name, count(pptm.problem_id) as count
+        from pms_problem_tag
+                 left join pms_problem_tag_mapping pptm on pms_problem_tag.id = pptm.tag_id
+                 left join pms_problem on pptm.problem_id = pms_problem.id and is_private = false
+        group by pms_problem_tag.id
+    </select>
+</mapper>

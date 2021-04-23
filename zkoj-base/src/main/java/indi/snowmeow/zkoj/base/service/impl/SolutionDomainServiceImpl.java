@@ -2,8 +2,6 @@ package indi.snowmeow.zkoj.base.service.impl;
 
 import indi.snowmeow.zkoj.base.common.base.BaseException;
 import indi.snowmeow.zkoj.base.common.enums.ResultCodeEnum;
-import indi.snowmeow.zkoj.base.common.util.AuthenticationUtil;
-import indi.snowmeow.zkoj.base.common.util.JwtUtil;
 import indi.snowmeow.zkoj.base.dao.SolutionDomainMapper;
 import indi.snowmeow.zkoj.base.model.entity.UmsUser;
 import indi.snowmeow.zkoj.base.model.vo.SolutionRankVO;
@@ -12,7 +10,6 @@ import indi.snowmeow.zkoj.base.service.SolutionDomainService;
 import indi.snowmeow.zkoj.base.service.UmsUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -29,7 +26,7 @@ public class SolutionDomainServiceImpl implements SolutionDomainService {
     @Autowired
     SolutionDomainMapper solutionDomainMapper;
     @Autowired
-    UmsUserService userUserService;
+    UmsUserService umsUserService;
 
     @Override
     public int getRankFromUserId(long userId) {
@@ -44,7 +41,7 @@ public class SolutionDomainServiceImpl implements SolutionDomainService {
 
     @Override
     public UserSolutionRankStatisticsVO getUserSolutionRankStatistics(String username) {
-        UmsUser user = userUserService.getFromUsername(username);
+        UmsUser user = umsUserService.getFromUsername(username);
         if (user == null) {
             throw new BaseException(ResultCodeEnum.USER_ACCOUNT_NOT_EXIST);
         }
@@ -53,7 +50,7 @@ public class SolutionDomainServiceImpl implements SolutionDomainService {
 
     @Override
     public Map<String, Object> getUserSolutionProblemStatistics(String username) {
-        UmsUser user = userUserService.getFromUsername(username);
+        UmsUser user = umsUserService.getFromUsername(username);
         if (user == null) {
             throw new BaseException(ResultCodeEnum.USER_ACCOUNT_NOT_EXIST);
         }
