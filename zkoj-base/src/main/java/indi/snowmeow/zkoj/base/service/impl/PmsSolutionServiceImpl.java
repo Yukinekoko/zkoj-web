@@ -2,6 +2,7 @@ package indi.snowmeow.zkoj.base.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import indi.snowmeow.zkoj.base.dao.PmsSolutionMapper;
+import indi.snowmeow.zkoj.base.model.dto.SolutionListSelectDTO;
 import indi.snowmeow.zkoj.base.model.entity.PmsSolution;
 import indi.snowmeow.zkoj.base.model.vo.SolutionRankVO;
 import indi.snowmeow.zkoj.base.service.PmsSolutionService;
@@ -40,5 +41,10 @@ public class PmsSolutionServiceImpl implements PmsSolutionService {
         QueryWrapper<PmsSolution> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("user_id", userId);
         return pmsSolutionMapper.selectList(queryWrapper);
+    }
+
+    @Override
+    public int count(SolutionListSelectDTO requestDTO) {
+        return pmsSolutionMapper.countByPublic(requestDTO);
     }
 }

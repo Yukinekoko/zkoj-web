@@ -1,5 +1,7 @@
 package indi.snowmeow.zkoj.base.dao;
 
+import indi.snowmeow.zkoj.base.model.dto.SolutionListSelectDTO;
+import indi.snowmeow.zkoj.base.model.vo.SolutionPreviewVO;
 import indi.snowmeow.zkoj.base.model.vo.SolutionRankVO;
 import indi.snowmeow.zkoj.base.model.vo.UserSolutionRankStatisticsVO;
 
@@ -35,4 +37,9 @@ public interface SolutionDomainMapper {
      *          - status_id: 评测状态ID
      * */
     List<Map<String, Object>> getUserSolutionProblemStatistics(long userId);
+
+    /**
+     * 获取评测列表
+     * */
+    List<SolutionPreviewVO> listPreview(SolutionListSelectDTO requestDTO);
 }

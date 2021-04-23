@@ -36,4 +36,18 @@
         limit 1
     </select>
 
+    <select id="countByPublic" resultType="int">
+        select count(solution.id)
+        from pms_solution as solution
+                 left join pms_problem as problem on solution.problem_id = problem.id
+                 left join ums_user on ums_user.id = solution.user_id
+        <where>
+            problem.is_private = false
+            <if test="username != null">and ums_user.username = #{username}</if>
+            <if test="problemId != null">and solution.problem_id = #{problemId}</if>
+            <if test="statusId != null">and solution.status_id = #{statusId}</if>
+            <if test="solutionId != null">and solution.id = #{solutionId}</if>
+        </where>
+    </select>
+
 </mapper>

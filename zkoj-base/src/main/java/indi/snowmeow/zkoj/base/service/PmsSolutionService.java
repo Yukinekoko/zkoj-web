@@ -1,5 +1,6 @@
 package indi.snowmeow.zkoj.base.service;
 
+import indi.snowmeow.zkoj.base.model.dto.SolutionListSelectDTO;
 import indi.snowmeow.zkoj.base.model.entity.PmsSolution;
 import indi.snowmeow.zkoj.base.model.vo.SolutionRankVO;
 
@@ -34,5 +35,10 @@ public interface PmsSolutionService {
      * 获取指定用户的所有评测记录
      * */
     List<PmsSolution> getFromUserId(long userId);
+
+    /**
+     * 获取评测记录总数（公开题目）
+     * */
+    int count(SolutionListSelectDTO requestDTO);
 
 }

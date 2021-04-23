@@ -3,7 +3,9 @@ package indi.snowmeow.zkoj.base.service.impl;
 import indi.snowmeow.zkoj.base.common.base.BaseException;
 import indi.snowmeow.zkoj.base.common.enums.ResultCodeEnum;
 import indi.snowmeow.zkoj.base.dao.SolutionDomainMapper;
+import indi.snowmeow.zkoj.base.model.dto.SolutionListSelectDTO;
 import indi.snowmeow.zkoj.base.model.entity.UmsUser;
+import indi.snowmeow.zkoj.base.model.vo.SolutionPreviewVO;
 import indi.snowmeow.zkoj.base.model.vo.SolutionRankVO;
 import indi.snowmeow.zkoj.base.model.vo.UserSolutionRankStatisticsVO;
 import indi.snowmeow.zkoj.base.service.SolutionDomainService;
@@ -72,4 +74,11 @@ public class SolutionDomainServiceImpl implements SolutionDomainService {
         result.put("accepted_problem_list", acceptedList);
         return result;
     }
+
+    @Override
+    public List<SolutionPreviewVO> listPreview(SolutionListSelectDTO requestDTO) {
+        requestDTO.setOffset((requestDTO.getPage() - 1) * requestDTO.getLimit());
+        return solutionDomainMapper.listPreview(requestDTO);
+    }
+
 }

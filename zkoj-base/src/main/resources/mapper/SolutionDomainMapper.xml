@@ -16,6 +16,30 @@
         <result property="rank" column="rank_no"/>
     </resultMap>
 
+    <resultMap id="SolutionPreviewResultMap" type="indi.snowmeow.zkoj.base.model.vo.SolutionPreviewVO">
+        <id property="id" column="id"/>
+        <result property="time" column="time"/>
+        <result property="memory" column="memory"/>
+        <result property="submitDate" column="submit_date"/>
+        <association property="user" javaType="indi.snowmeow.zkoj.base.model.vo.SolutionUserVO">
+            <result property="username" column="user_username"/>
+            <result property="name" column="user_name"/>
+        </association>
+        <association property="problem" javaType="indi.snowmeow.zkoj.base.model.vo.SolutionProblemVO">
+            <id property="id" column="problem_id"/>
+            <result property="title" column="problem_title"/>
+        </association>
+        <association property="status" javaType="indi.snowmeow.zkoj.base.model.vo.SolutionStatusVO">
+            <id property="id" column="status_id"/>
+            <result property="shortName" column="status_name"/>
+            <result property="name" column="status_introduce"/>
+        </association>
+        <association property="language" javaType="indi.snowmeow.zkoj.base.model.vo.LanguageVO">
+            <id property="id" column="language_id"/>
+            <result property="name" column="language_name"/>
+        </association>
+    </resultMap>
+
     <select id="getRankFromUserId" resultType="int">
         select rank_no
         from (select user_id, @rank:=@rank+1 as rank_no
@@ -61,6 +85,43 @@
                  left join pms_problem pp on pms_solution.problem_id = pp.id
         where pms_solution.user_id = #{userId}
         group by pms_solution.problem_id;
+    </select>
+
+    <select id="listPreview" resultMap="SolutionPreviewResultMap">
+        select so.* , problem.title as problem_title , language.name as language_name
+        from (select solution.id ,
+        problem_id,
+        language_id,
+        user.username as user_username,
+        user.name as user_name,
+        time,memory,submit_date,
+        solution_status.id as status_id,
+        solution_status.name as status_name,
+        solution_status.introduce as status_introduce
+        from pms_solution as solution
+        left join ums_user as user on solution.user_id = user.id
+        left join pms_solution_status as solution_status on solution.status_id = solution_status.id
+        <where>
+            <if test="problemId != null">
+                solution.problem_id = #{problemId}
+            </if>
+            <if test="statusId != null">
+                and solution.status_id = #{statusId}
+            </if>
+            <if test="username != null">
+                and user.username = #{username}
+            </if>
+            <if test="solutionId != null">
+                and solution.id = ${solutionId}
+            </if>
+        </where>
+        group by solution.id) as so
+        left join pms_problem as problem on problem.id = so.problem_id
+        left join pms_language as language on language.id = so.language_id
+        where problem.is_private = false
+        ORDER BY submit_date DESC
+        limit #{offset},#{limit}
+        ;
     </select>
 
 </mapper>

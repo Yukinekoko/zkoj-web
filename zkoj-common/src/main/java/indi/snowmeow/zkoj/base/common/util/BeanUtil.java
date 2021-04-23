@@ -52,7 +52,8 @@ public class BeanUtil {
             BeanUtils.copyProperties(source, target);
             return target;
         } catch (Exception e) {
-            throw new FatalBeanException("Could not copy list");
+            e.printStackTrace();
+            throw new FatalBeanException("Could not copy bean");
         }
     }
 
