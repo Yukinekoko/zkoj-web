@@ -14,6 +14,10 @@ import lombok.Data;
 public class PmsProblem implements Serializable {
 
     private Long id;
+    @TableField("problem_number")
+    private Long problemNumber;
+
+    private Short version;
 
     private String title;
 
