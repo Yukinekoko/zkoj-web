@@ -1,5 +1,6 @@
 package indi.snowmeow.zkoj.judger;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -8,6 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @date 2021/5/8
  */
 @SpringBootApplication
+@MapperScan("indi.snowmeow.judger.dao")
 public class ZkojJudgerApplication {
 
     public static void main(String[] args) {

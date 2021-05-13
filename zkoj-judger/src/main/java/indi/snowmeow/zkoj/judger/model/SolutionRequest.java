@@ -15,7 +15,13 @@ public class SolutionRequest implements Serializable {
 
     private Long problemId;
 
-    private Integer problemVersion;
+    private Long languageId;
+
+    private Short problemVersion;
+
+    private Integer timeLimit;
+
+    private Integer memoryLimit;
 
     private static final long serialVersionUID = 1L;
 }

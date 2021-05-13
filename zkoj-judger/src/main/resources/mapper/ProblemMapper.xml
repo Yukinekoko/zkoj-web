@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="indi.snowmeow.zkoj.judger.dao.ProblemMapper">
+
+
+    <select id="findCheckPointListFromProblemId"
+            resultType="indi.snowmeow.zkoj.judger.model.entity.PmsProblemCheckPoint">
+        select id, problem_id, input, output from pms_problem_check_point where problem_id=#{problemId}
+    </select>
+</mapper>
