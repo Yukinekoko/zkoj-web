@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @date 2021/5/8
  */
 @SpringBootApplication
-@MapperScan("indi.snowmeow.judger.dao")
+@MapperScan("indi.snowmeow.zkoj.judger.dao")
 public class ZkojJudgerApplication {
 
     public static void main(String[] args) {

@@ -2,6 +2,7 @@ package indi.snowmeow.zkoj.judger.core;
 
 import indi.snowmeow.zkoj.base.common.base.BaseException;
 import indi.snowmeow.zkoj.base.common.enums.ResultCodeEnum;
+import indi.snowmeow.zkoj.base.common.enums.SolutionStatusEnum;
 import indi.snowmeow.zkoj.judger.core.runner.CPPRunner;
 import indi.snowmeow.zkoj.judger.core.runner.CRunner;
 import indi.snowmeow.zkoj.judger.core.runner.JavaRunner;
@@ -11,14 +12,11 @@ import indi.snowmeow.zkoj.judger.model.SolutionRequest;
 import indi.snowmeow.zkoj.judger.model.entity.PmsLanguage;
 import indi.snowmeow.zkoj.judger.model.entity.PmsProblemCheckPoint;
 import indi.snowmeow.zkoj.judger.service.ProblemService;
-import indi.snowmeow.zkoj.judger.service.SolutionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import indi.snowmeow.zkoj.judger.service.SolutionService;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,9 +59,8 @@ public class SolutionHandle {
 
         initProblemData(solutionRequest.getProblemId(), solutionRequest.getProblemVersion(), checkPointList);
         createSourceCodeFile(solutionRequest.getSolutionId(), sourceCode, solutionRequest.getLanguageId());
-
-
-        return false;
+        judge(solutionRequest, checkPointList);
+        return true;
     }
 
     /**
@@ -73,8 +70,8 @@ public class SolutionHandle {
         String problemDataFolderPath = PROBLEM_DATA_BASE_PATH
                 + String.format("p_%d_%d", solutionRequest.getProblemId(), solutionRequest.getProblemVersion());
         String solutionFolderPath = SOLUTION_DATA_PATH + String.format("s_%d", solutionRequest.getSolutionId());
-
         long languageId = solutionRequest.getLanguageId();
+        long solutionId = solutionRequest.getSolutionId();
         String compileErrorFilePath = solutionFolderPath + File.separator + "error_0";
         JudgerRunner runner;
         if (languageId == 1) {
@@ -94,33 +91,109 @@ public class SolutionHandle {
         }
 
         if (languageId != 4) {
+            solutionService.updateSolutionStatus(solutionId, SolutionStatusEnum.C);
             RunningResult compileResult =
-                    runner.compile(compileErrorFilePath, solutionFolderPath, getSourceFileName(languageId));
+                    runner.compile(compileErrorFilePath, solutionFolderPath + File.separator, getSourceFileName(languageId));
             if (compileResult.getCode() != 0) {
-                // TODO 编译运行异常
+                // TODO 非常规编译运行异常
+                solutionService.updateSolutionStatus(solutionId, SolutionStatusEnum.CE);
                 System.out.println("编译运行异常");
+                System.out.println(compileResult.toString());
                 return;
             }
             File compileErrorFile = new File(compileErrorFilePath);
             if (compileErrorFile.length() != 0) {
-                // TODO 编译出错
-                System.out.println("编译出错");
+                solutionService.updateSolutionStatus(solutionId, SolutionStatusEnum.CE);
                 return;
             }
         }
 
+        solutionService.updateSolutionStatus(solutionId, SolutionStatusEnum.R);
         for (int i = 0; i < checkPointList.size(); i++) {
             String inputFilePath = problemDataFolderPath + File.separator + "input_" + (i + 1);
             String outputFilePath = solutionFolderPath + File.separator + "output_" + (i + 1);
             String errorFilePath = solutionFolderPath + File.separator + "error_" + (i + 1);
             RunningResult result =
                     runner.run(inputFilePath, outputFilePath, errorFilePath,
-                            solutionFolderPath, getSourceFileName(languageId),
+                            solutionFolderPath + File.separator, getSourceFileName(languageId),
                             solutionRequest.getTimeLimit(), solutionRequest.getMemoryLimit());
-            // TODO 判断运行结果
 
+            File errorFile = new File(errorFilePath);
+            if (errorFile.length() != 0){
+                solutionService.updateSolutionStatus(solutionId, SolutionStatusEnum.RE);
+                return;
+            }
+
+            if (result.getCode() != 0) {
+                switch (result.getCode()) {
+                    case 1 :
+                        // 未知异常
+                        solutionService.updateSolutionStatus(solutionId, SolutionStatusEnum.RE);
+                        break;
+                    case 2 :
+                        // 超内存
+                        solutionService.updateSolutionStatus(solutionId, SolutionStatusEnum.MLE);
+                        break;
+                    case 3 :
+                        // 超时
+                        solutionService.updateSolutionStatus(solutionId, SolutionStatusEnum.TLE);
+                        break;
+                    case 4 :
+                        //运行时异常
+                        solutionService.updateSolutionStatus(solutionId, SolutionStatusEnum.RE);
+                }
+                return;
+            }
+
+            // 答案对比
+            StringBuilder outputStringBuilder = new StringBuilder();
+            try {
+                FileReader outputFileReader = new FileReader(outputFilePath);
+                char[] buf = new char[1024];
+                int bufCount = 0;
+                while ((bufCount = outputFileReader.read(buf)) != -1) {
+                    outputStringBuilder.append(buf, 0, bufCount);
+                }
+                outputFileReader.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (!compareResult(checkPointList.get(i).getOutput(), outputStringBuilder.toString())) {
+                solutionService.updateSolutionStatus(solutionId, SolutionStatusEnum.WA);
+                return;
+            }
         }
+        solutionService.updateSolutionStatus(solutionId, SolutionStatusEnum.AC);
+    }
 
+    protected boolean compareResult(String sampleOutput, String clientOutput) {
+        clientOutput = trimEnd(clientOutput);
+        clientOutput = trimEnd(sampleOutput);
+        String[] sample = sampleOutput.split("\n");
+        String[] client = clientOutput.split("\n");
+        if (sample.length != client.length) {
+            return false;
+        }
+        for (int i = 0; i < sample.length; i++) {
+            String s1 = trimEnd(sample[i]);
+            String s2 = trimEnd(client[i]);
+            if (!s1.equals(s2)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // TODO 在不同操作系统下对换行符回车符的处理问题
+    protected String trimEnd(String str) {
+        char[] c = str.toCharArray();
+        int len = c.length;
+        while (len > 0 && (c[len - 1] == ' ' || c[len - 1] == '\n' || c[len - 1] == '\r')) {
+            len--;
+        }
+        return new String(c, 0, len);
     }
 
     /**
@@ -146,7 +219,7 @@ public class SolutionHandle {
         File dataFolderFile = new File(dataFolderPath);
         if (!dataFolderFile.exists()) {
             createProblemDataFile(dataFolderFile, checkPointList);
-        } else if (checkProblemDataFile(dataFolderFile, checkPointList.size())) {
+        } else if (!checkProblemDataFile(dataFolderFile, checkPointList.size())) {
             refreshProblemDataFile(dataFolderFile, checkPointList);
         }
     }

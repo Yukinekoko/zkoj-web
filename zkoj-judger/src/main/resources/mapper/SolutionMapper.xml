@@ -2,6 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="indi.snowmeow.zkoj.judger.dao.SolutionMapper">
 
+    <update id="updateStatusId">
+        update pms_solution set status_id = #{statusId} where id = #{solutionId}
+    </update>
+
+    <update id="updateTimeAndMemory">
+        update pms_solution set time = #{time},memory = #{memory} where id = #{solution_id}
+    </update>
+
     <select id="findSourceCodeFromSolutionId" resultType="java.lang.String">
         select source_code from pms_solution_source_code where solution_id = #{solutionId}
     </select>

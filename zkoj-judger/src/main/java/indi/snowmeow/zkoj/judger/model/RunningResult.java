@@ -1,14 +1,11 @@
 package indi.snowmeow.zkoj.judger.model;
 
-import lombok.Data;
-
 import java.io.Serializable;
 
 /**
  * @author snowmeow
  * @date 2021/5/8
  */
-@Data
 public class RunningResult implements Serializable {
 
     /**
@@ -32,4 +29,45 @@ public class RunningResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    public int getCode() {
+        return code;
+    }
+
+    public void setCode(int code) {
+        this.code = code;
+    }
+
+    public int getTime() {
+        return time;
+    }
+
+    public void setTime(int time) {
+        this.time = time;
+    }
+
+    public int getMemory() {
+        return memory;
+    }
+
+    public void setMemory(int memory) {
+        this.memory = memory;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    @Override
+    public String toString() {
+        return "RunningResult{" +
+                "code=" + code +
+                ", time=" + time +
+                ", memory=" + memory +
+                ", message='" + message + '\'' +
+                '}';
+    }
 }

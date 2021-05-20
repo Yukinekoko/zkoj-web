@@ -7,6 +7,7 @@ mvnw
 mvnw.cmd
 zkoj-temp/src/main/resources/application-config.yml
 zkoj-base/src/main/resources/application-config.yml
+zkoj-dll.dll
 
 src/main/resources/application-config.yml
 ### STS ###
@@ -39,3 +40,4 @@ build/
 /src/test/
 /zkoj-auth/src/main/resources/jwt.jks
 /zkoj-gateway/src/main/resources/public.txt
+/zkoj-judger/res/

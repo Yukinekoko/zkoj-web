@@ -11,11 +11,11 @@ import java.io.File;
  */
 public class CPPRunner extends JudgerRunner {
 
-    private static final String COMPILE_COMMAND = ENV_BASE_PATH + "Java"
-            + File.separator + "bin" + File.separator + "javac %s";
+    private static final String COMPILE_COMMAND = ENV_BASE_PATH + "MinGW"
+            + File.separator + "bin" + File.separator + "g++ -fno-asm -Wall -lm --static -o %s %s";
 
-    private static final String RUN_COMMAND = ENV_BASE_PATH + "Java"
-            + File.separator + "bin" + File.separator + "java -cp %s %s";
+/*    private static final String RUN_COMMAND = ENV_BASE_PATH + "Java"
+            + File.separator + "bin" + File.separator + "java -cp %s %s";*/
 
     @Override
     public RunningResult compile(String errorFilePath, String solutionFolderPath, String sourceFileName) {

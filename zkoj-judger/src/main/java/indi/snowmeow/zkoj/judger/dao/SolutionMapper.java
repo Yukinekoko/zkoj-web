@@ -7,4 +7,8 @@ package indi.snowmeow.zkoj.judger.dao;
 public interface SolutionMapper {
 
     String findSourceCodeFromSolutionId(long solutionId);
+
+    int updateStatusId(long solutionId, long statusId);
+
+    int updateTimeAndMemory(long solutionId, int time, int memory);
 }

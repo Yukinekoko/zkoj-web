@@ -13,8 +13,8 @@ import java.io.File;
  */
 public class PythonRunner extends JudgerRunner {
 
-    private static final String RUN_COMMAND = ENV_BASE_PATH + "Java"
-            + File.separator + "bin" + File.separator + "java -cp %s %s";
+    private static final String RUN_COMMAND = ENV_BASE_PATH + "Python"
+            + File.separator + "python %s";
 
     @Override
     public RunningResult compile(String errorFilePath, String solutionFolderPath, String sourceFileName) {

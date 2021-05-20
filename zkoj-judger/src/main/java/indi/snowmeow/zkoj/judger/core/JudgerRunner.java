@@ -1,19 +1,20 @@
 package indi.snowmeow.zkoj.judger.core;
 
 import indi.snowmeow.zkoj.judger.model.RunningResult;
-import org.springframework.stereotype.Component;
-
 import java.io.File;
 
 /**
  * @author snowmeow
  * @date 2021/5/8
  */
-@Component
 public abstract class JudgerRunner {
 
+    static {
+        System.load("D:\\NasDrive\\Programmer\\Project\\ZKOJ\\source\\zkoj-web\\zkoj-dll.dll");
+    }
+
     /** 环境包根目录 */
-    protected static final String ENV_BASE_PATH =  "D:\\NasDrive\\judger-env\\env\\";
+    protected static final String ENV_BASE_PATH =  "D:\\NasDrive\\judger-env\\";
 
     protected static final int DEFAULT_COMPILE_TIME_LIMIT = 10 * 1000;
 
