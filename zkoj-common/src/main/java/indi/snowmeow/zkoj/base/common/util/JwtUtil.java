@@ -13,17 +13,26 @@ import indi.snowmeow.zkoj.base.common.enums.ResultCodeEnum;
  */
 public class JwtUtil {
 
-    public static Long getUserId(String token) {
+    public static long getUserId(String token) {
+        if (StringUtil.isEmpty(token)) {
+            throw new BaseException(ResultCodeEnum.SYSTEM_ERROR, "token为空");
+        }
         DecodedJWT jwt = decode(token);
         return jwt.getClaim("uid").asLong();
     }
 
     public static String getRole(String token) {
+        if (StringUtil.isEmpty(token)) {
+            throw new BaseException(ResultCodeEnum.SYSTEM_ERROR, "token为空");
+        }
         DecodedJWT jwt = decode(token);
         return jwt.getClaim("role").asString();
     }
 
     public static DecodedJWT decode(String token) {
+        if (StringUtil.isEmpty(token)) {
+            throw new BaseException(ResultCodeEnum.SYSTEM_ERROR, "token为空");
+        }
         try {
             return JWT.decode(token);
         } catch (JWTDecodeException exception) {

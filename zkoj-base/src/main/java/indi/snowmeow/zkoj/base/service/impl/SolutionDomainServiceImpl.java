@@ -1,17 +1,27 @@
 package indi.snowmeow.zkoj.base.service.impl;
 
 import indi.snowmeow.zkoj.base.common.base.BaseException;
+import indi.snowmeow.zkoj.base.common.enums.LanguageEnum;
 import indi.snowmeow.zkoj.base.common.enums.ResultCodeEnum;
+import indi.snowmeow.zkoj.base.common.enums.SolutionStatusEnum;
 import indi.snowmeow.zkoj.base.common.util.AuthenticationUtil;
 import indi.snowmeow.zkoj.base.common.util.BeanUtil;
 import indi.snowmeow.zkoj.base.common.util.JwtUtil;
+import indi.snowmeow.zkoj.base.common.util.LanguageUtil;
 import indi.snowmeow.zkoj.base.dao.SolutionDomainMapper;
 import indi.snowmeow.zkoj.base.model.dto.SolutionListSelectDTO;
+import indi.snowmeow.zkoj.base.model.dto.SolutionRequestDTO;
 import indi.snowmeow.zkoj.base.model.entity.*;
 import indi.snowmeow.zkoj.base.model.vo.*;
+import indi.snowmeow.zkoj.base.mq.SolutionMessageBinding;
 import indi.snowmeow.zkoj.base.service.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -25,6 +35,10 @@ import java.util.Map;
 @Service
 public class SolutionDomainServiceImpl implements SolutionDomainService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(SolutionDomainServiceImpl.class);
+
+    @Autowired
+    SolutionMessageBinding solutionMessageBinding;
     @Autowired
     SolutionDomainMapper solutionDomainMapper;
     @Autowired
@@ -39,6 +53,59 @@ public class SolutionDomainServiceImpl implements SolutionDomainService {
     PmsLanguageService pmsLanguageService;
     @Autowired
     PmsProblemService pmsProblemService;
+    @Autowired
+    PmsProblemLimitService pmsProblemLimitService;
+
+    @Transactional
+    @Override
+    public void createSolution(long problemId, long languageId, String code) {
+        PmsProblem problemEntity = pmsProblemService.getFromId(problemId);
+        if (null == problemEntity) {
+            throw new BaseException(ResultCodeEnum.PARAM_ERROR);
+        }
+        LanguageEnum languageEnum = LanguageUtil.getLanguageEnum(languageId);
+        if (null == languageEnum) {
+            throw new BaseException(ResultCodeEnum.PARAM_ERROR);
+        }
+        String token = AuthenticationUtil.getToken();
+        long userId = JwtUtil.getUserId(token);
+
+        PmsSolution solutionEntity = new PmsSolution();
+        solutionEntity.setProblemId(problemId);
+        solutionEntity.setUserId(userId);
+        solutionEntity.setTime(0);
+        solutionEntity.setMemory(0);
+        solutionEntity.setStatusId(SolutionStatusEnum.W.getId());
+        solutionEntity.setLanguageId(languageId);
+
+        pmsSolutionService.insert(solutionEntity);
+        long solutionId = solutionEntity.getId();
+        PmsSolutionSourceCode solutionSourceCodeEntity = new PmsSolutionSourceCode();
+        solutionSourceCodeEntity.setSolutionId(solutionId);
+        solutionSourceCodeEntity.setSourceCode(code);
+        pmsSolutionSourceCodeService.insert(solutionSourceCodeEntity);
+
+        PmsProblemLimit problemLimitEntity =
+                pmsProblemLimitService.findFromProblemIdLanguageId(problemId, languageEnum.getId());
+        if (problemLimitEntity == null) {
+            problemLimitEntity =
+                    pmsProblemLimitService.findFromProblemIdLanguageId(problemId, LanguageEnum.OTHER.getId());
+        }
+        SolutionRequestDTO solutionRequestDTO = new SolutionRequestDTO();
+        solutionRequestDTO.setSolutionId(solutionId);
+        solutionRequestDTO.setProblemId(problemId);
+        solutionRequestDTO.setLanguageId(languageEnum.getId());
+        solutionRequestDTO.setProblemVersion(problemEntity.getVersion());
+        solutionRequestDTO.setTimeLimit(problemLimitEntity.getTime());
+        solutionRequestDTO.setMemoryLimit(problemLimitEntity.getMemory());
+
+        Message<SolutionRequestDTO> solutionRequestMessage =
+                MessageBuilder.withPayload(solutionRequestDTO).build();
+        if (!solutionMessageBinding.solutionOutput().send(solutionRequestMessage)) {
+            LOGGER.error("createSolution error - 评测MQ请求发送失败");
+            throw new BaseException(ResultCodeEnum.MQ_ERROR);
+        }
+    }
 
     @Override
     public int getRankFromUserId(long userId) {

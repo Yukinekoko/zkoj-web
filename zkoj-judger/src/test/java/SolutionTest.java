@@ -1,6 +1,6 @@
 import indi.snowmeow.zkoj.judger.ZkojJudgerApplication;
 import indi.snowmeow.zkoj.judger.core.SolutionHandle;
-import indi.snowmeow.zkoj.judger.model.SolutionRequest;
+import indi.snowmeow.zkoj.judger.model.SolutionRequestDTO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ public class SolutionTest {
 
     @Test
     public void test() {
-        SolutionRequest solutionRequest = new SolutionRequest();
+        SolutionRequestDTO solutionRequest = new SolutionRequestDTO();
         solutionRequest.setSolutionId(126L);
         solutionRequest.setProblemId(2L);
         solutionRequest.setLanguageId(4L);

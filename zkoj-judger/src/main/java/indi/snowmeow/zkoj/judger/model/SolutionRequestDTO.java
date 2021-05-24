@@ -1,6 +1,7 @@
 package indi.snowmeow.zkoj.judger.model;
 
 import lombok.Data;
+import lombok.ToString;
 
 import java.io.Serializable;
 
@@ -9,7 +10,8 @@ import java.io.Serializable;
  * @date 2021/5/8
  */
 @Data
-public class SolutionRequest implements Serializable {
+@ToString
+public class SolutionRequestDTO implements Serializable {
 
     private Long solutionId;
 

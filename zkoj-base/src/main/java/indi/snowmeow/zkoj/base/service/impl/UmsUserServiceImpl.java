@@ -26,7 +26,7 @@ import org.springframework.util.Assert;
 @Service
 public class UmsUserServiceImpl implements UmsUserService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UmsUserMapper.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UmsUserServiceImpl.class);
 
     @DubboReference(version = "1.0.0")
     EncodePasswordService encodePasswordService;

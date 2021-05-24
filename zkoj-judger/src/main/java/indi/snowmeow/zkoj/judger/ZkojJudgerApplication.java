@@ -1,8 +1,10 @@
 package indi.snowmeow.zkoj.judger;
 
+import indi.snowmeow.zkoj.judger.mq.SolutionRequestBinding;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.stream.annotation.EnableBinding;
 
 /**
  * @author snowmeow
@@ -10,6 +12,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 @SpringBootApplication
 @MapperScan("indi.snowmeow.zkoj.judger.dao")
+@EnableBinding(SolutionRequestBinding.class)
 public class ZkojJudgerApplication {
 
     public static void main(String[] args) {

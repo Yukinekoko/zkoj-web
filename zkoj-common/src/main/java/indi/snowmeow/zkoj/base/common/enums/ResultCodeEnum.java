@@ -18,6 +18,7 @@ public enum ResultCodeEnum {
     TOKEN_ERROR(10002, "token异常"),
     SYSTEM_ERROR(10003, "系统异常"),
     SERVICE_NOT_AVAILABLE(10004, "服务暂不可用"),
+    MQ_ERROR(10004, "消息总线异常"),
     /** 用户异常 */
     USER_ERROR(20001, "用户异常"),
     USER_ACCOUNT_NOT_EXIST(20002, "账号不存在"),

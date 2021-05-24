@@ -9,5 +9,22 @@ spring:
     password: root
     type: com.alibaba.druid.pool.DruidDataSource
 
+  cloud:
+    stream:
+      bindings:
+        SOLUTION_REQUEST_INPUT:
+          destination: SOLUTION_REQUEST_TOPIC
+          content-type: application/json
+          group: solution_request_consumer
+      rocketmq:
+        binder:
+          name-server: 192.168.31.179:9876
+        bindings:
+          SOLUTION_REQUEST_INPUT:
+            consumer:
+              enabled: true
+              broadcasting: false
+
+
 mybatis-plus:
   mapper-locations: classpath:mapper/*.xml

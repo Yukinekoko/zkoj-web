@@ -10,6 +10,17 @@
         <result property="count" column="count"/>
         <result property="rank" column="rank_no"/>
     </resultMap>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into pms_solution set
+            problem_id = #{problemId},
+            user_id = #{userId},
+            time = #{time},
+            memory = #{memory},
+            submit_date = CURRENT_TIMESTAMP(),
+            status_id = #{statusId},
+            language_id = #{languageId},
+            gmt_modified = CURRENT_TIMESTAMP()
+    </insert>
 
     <select id="findByPublic" resultType="indi.snowmeow.zkoj.base.model.entity.PmsSolution">
         select pms_solution.id, problem_id, pms_solution.user_id, time, memory, submit_date, status_id, language_id, error_message

@@ -13,6 +13,11 @@ import java.util.Map;
 public interface SolutionDomainService {
 
     /**
+     * 新建评测
+     * */
+    void createSolution(long problemId, long languageId, String code);
+
+    /**
      * 获取指定用户的AC数量排名
      * */
     int getRankFromUserId(long userId);

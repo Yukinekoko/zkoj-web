@@ -12,13 +12,13 @@ public enum LanguageEnum {
     JAVA(3),
     PYTHON(4);
 
-    private int id;
+    private final long id;
 
-    LanguageEnum(int id) {
+    LanguageEnum(long id) {
         this.id = id;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 }

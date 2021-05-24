@@ -17,13 +17,13 @@ public enum SolutionStatusEnum {
     MLE(9),
     PE(10);
 
-    private int id;
+    private long id;
 
-    SolutionStatusEnum(int id) {
+    SolutionStatusEnum(long id) {
         this.id = id;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 }

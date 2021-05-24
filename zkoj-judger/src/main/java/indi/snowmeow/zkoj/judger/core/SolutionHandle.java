@@ -8,8 +8,7 @@ import indi.snowmeow.zkoj.judger.core.runner.CRunner;
 import indi.snowmeow.zkoj.judger.core.runner.JavaRunner;
 import indi.snowmeow.zkoj.judger.core.runner.PythonRunner;
 import indi.snowmeow.zkoj.judger.model.RunningResult;
-import indi.snowmeow.zkoj.judger.model.SolutionRequest;
-import indi.snowmeow.zkoj.judger.model.entity.PmsLanguage;
+import indi.snowmeow.zkoj.judger.model.SolutionRequestDTO;
 import indi.snowmeow.zkoj.judger.model.entity.PmsProblemCheckPoint;
 import indi.snowmeow.zkoj.judger.service.ProblemService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +44,7 @@ public class SolutionHandle {
         initRunner();
     }
 
-    public boolean newSolution(SolutionRequest solutionRequest) {
+    public boolean newSolution(SolutionRequestDTO solutionRequest) {
 
         List<PmsProblemCheckPoint> checkPointList =
                 problemService.findCheckPointListFromProblemId(solutionRequest.getProblemId());
@@ -66,7 +65,7 @@ public class SolutionHandle {
     /**
      * 执行判题
      * */
-    protected void judge(SolutionRequest solutionRequest, List<PmsProblemCheckPoint> checkPointList) {
+    protected void judge(SolutionRequestDTO solutionRequest, List<PmsProblemCheckPoint> checkPointList) {
         String problemDataFolderPath = PROBLEM_DATA_BASE_PATH
                 + String.format("p_%d_%d", solutionRequest.getProblemId(), solutionRequest.getProblemVersion());
         String solutionFolderPath = SOLUTION_DATA_PATH + String.format("s_%d", solutionRequest.getSolutionId());
@@ -109,6 +108,8 @@ public class SolutionHandle {
         }
 
         solutionService.updateSolutionStatus(solutionId, SolutionStatusEnum.R);
+        int useTime = 0;
+        int useMemory = 0;
         for (int i = 0; i < checkPointList.size(); i++) {
             String inputFilePath = problemDataFolderPath + File.separator + "input_" + (i + 1);
             String outputFilePath = solutionFolderPath + File.separator + "output_" + (i + 1);
@@ -145,6 +146,8 @@ public class SolutionHandle {
                 return;
             }
 
+            useTime = Math.max(useTime, result.getTime());
+            useMemory = Math.max(useMemory, result.getMemory());
             // 答案对比
             StringBuilder outputStringBuilder = new StringBuilder();
             try {
@@ -162,10 +165,13 @@ public class SolutionHandle {
             }
             if (!compareResult(checkPointList.get(i).getOutput(), outputStringBuilder.toString())) {
                 solutionService.updateSolutionStatus(solutionId, SolutionStatusEnum.WA);
+                solutionService.updateTimeAndMemory(solutionId,useTime, useMemory / 1000);
                 return;
             }
         }
+
         solutionService.updateSolutionStatus(solutionId, SolutionStatusEnum.AC);
+        solutionService.updateTimeAndMemory(solutionId, useTime, useMemory / 1000);
     }
 
     protected boolean compareResult(String sampleOutput, String clientOutput) {
@@ -282,8 +288,9 @@ public class SolutionHandle {
      * */
     protected void createSourceCodeFile(long solutionId, String sourceCode, long languageId) {
         File solutionFolderFile = new File(SOLUTION_DATA_PATH + String.format("s_%d", solutionId));
+        // TODO 测试
         if (!solutionFolderFile.mkdirs()) {
-            throw new BaseException(ResultCodeEnum.JUDGER_ERROR, "评测文件夹已存在，创建失败");
+            //throw new BaseException(ResultCodeEnum.JUDGER_ERROR, "评测文件夹已存在，创建失败");
         }
         File sourceCodeFile;
         if(languageId == 1) {

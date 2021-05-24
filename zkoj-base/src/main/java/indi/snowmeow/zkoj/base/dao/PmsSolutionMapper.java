@@ -16,6 +16,10 @@ public interface PmsSolutionMapper extends BaseMapper<PmsSolution> {
 
 
     /**
+     * 插入新的评测对象
+     * */
+    int insert(PmsSolution solutionEntity);
+    /**
      * 获取评测对象（公开题目）
      * */
     PmsSolution findByPublic(long id);

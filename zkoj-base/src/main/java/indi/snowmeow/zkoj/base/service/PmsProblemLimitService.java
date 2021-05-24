@@ -14,4 +14,9 @@ public interface PmsProblemLimitService {
      * 获取指定问题的限制列表
      * */
     List<PmsProblemLimit> listFromProblemId(long problemId);
+
+    /**
+     * 获取指定问题指定语言的限制列表
+     * */
+    PmsProblemLimit findFromProblemIdLanguageId(long problemId, long languageId);
 }

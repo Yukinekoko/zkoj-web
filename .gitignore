@@ -41,3 +41,4 @@ build/
 /zkoj-auth/src/main/resources/jwt.jks
 /zkoj-gateway/src/main/resources/public.txt
 /zkoj-judger/res/
+/res/

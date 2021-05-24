@@ -26,4 +26,13 @@ public class PmsProblemLimitServiceImpl implements PmsProblemLimitService {
         queryWrapper.eq("problem_id", problemId);
         return pmsProblemLimitMapper.selectList(queryWrapper);
     }
+
+    @Override
+    public PmsProblemLimit findFromProblemIdLanguageId(long problemId, long languageId) {
+        QueryWrapper<PmsProblemLimit> queryWrapper = new QueryWrapper<>();
+        // queryWrapper.eq("is_private", false);
+        queryWrapper.eq("problem_id", problemId);
+        queryWrapper.eq("language_id", languageId);
+        return pmsProblemLimitMapper.selectOne(queryWrapper);
+    }
 }

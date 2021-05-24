@@ -13,6 +13,10 @@ import java.util.List;
 public interface PmsSolutionService {
 
     /**
+     * 增加新的solution
+     * */
+    void insert(PmsSolution solutionEntity);
+    /**
      * 获取指定评测对象（公开题目）
      * */
     PmsSolution findByPublic(long id);

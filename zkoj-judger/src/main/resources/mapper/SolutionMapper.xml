@@ -3,11 +3,11 @@
 <mapper namespace="indi.snowmeow.zkoj.judger.dao.SolutionMapper">
 
     <update id="updateStatusId">
-        update pms_solution set status_id = #{statusId} where id = #{solutionId}
+        update pms_solution set status_id = #{statusId}, gmt_modified = CURRENT_TIMESTAMP() where id = #{solutionId}
     </update>
 
     <update id="updateTimeAndMemory">
-        update pms_solution set time = #{time},memory = #{memory} where id = #{solution_id}
+        update pms_solution set time = #{time},memory = #{memory}, gmt_modified = CURRENT_TIMESTAMP() where id = #{solutionId}
     </update>
 
     <select id="findSourceCodeFromSolutionId" resultType="java.lang.String">

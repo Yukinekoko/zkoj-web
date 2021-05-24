@@ -5,17 +5,18 @@ import indi.snowmeow.zkoj.base.common.base.BaseResult;
 import indi.snowmeow.zkoj.base.common.enums.ResultCodeEnum;
 import indi.snowmeow.zkoj.base.common.util.BeanUtil;
 import indi.snowmeow.zkoj.base.model.dto.SolutionListSelectDTO;
+import indi.snowmeow.zkoj.base.model.dto.SolutionRequestDTO;
 import indi.snowmeow.zkoj.base.model.req.SolutionListRequest;
 import indi.snowmeow.zkoj.base.model.vo.SolutionDetailVO;
 import indi.snowmeow.zkoj.base.model.vo.SolutionPreviewVO;
+import indi.snowmeow.zkoj.base.mq.SolutionMessageBinding;
 import indi.snowmeow.zkoj.base.service.PmsSolutionService;
 import indi.snowmeow.zkoj.base.service.SolutionDomainService;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.websocket.server.PathParam;
@@ -66,6 +67,18 @@ public class SolutionController {
             throw new BaseException(ResultCodeEnum.PARAM_ERROR);
         }
         return BaseResult.success(solutionDomainService.getDetail(solutionId));
+    }
+
+    @PostMapping("/solution/problem/{problem_id}")
+    public BaseResult<Void> createNewSolution(@PathVariable("problem_id") long problemId,
+                                              @RequestBody Map<String, Object> requestBody) {
+        Integer languageId = (Integer) requestBody.get("language_id");
+        String code = (String) requestBody.get("code");
+        if (code == null || languageId == null || problemId <= 0 || languageId <= 0) {
+            throw new BaseException(ResultCodeEnum.PARAM_ERROR);
+        }
+        solutionDomainService.createSolution(problemId, languageId, code);
+        return BaseResult.success();
     }
 
 }
