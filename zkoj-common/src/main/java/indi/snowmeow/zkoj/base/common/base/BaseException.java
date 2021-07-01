@@ -8,7 +8,7 @@ import indi.snowmeow.zkoj.base.common.enums.ResultCodeEnum;
  */
 public class BaseException extends RuntimeException {
 
-    private ResultCodeEnum code;
+    private final ResultCodeEnum code;
 
     public BaseException() {
         this.code = ResultCodeEnum.COMMON_ERROR;

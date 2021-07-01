@@ -47,7 +47,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .authenticationManager(authenticationManager)
                 .tokenEnhancer(tokenEnhancerChain)
                 .allowedTokenEndpointRequestMethods(HttpMethod.POST)
-                .pathMapping("/oauth/token", "/auth/login");
+                .pathMapping("/oauth/token", "/login");
     }
 
     /* 设置客户端信息 */

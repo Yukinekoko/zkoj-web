@@ -14,7 +14,6 @@ spring:
         SOLUTION_REQUEST_INPUT:
           destination: SOLUTION_REQUEST_TOPIC
           content-type: application/json
-
       rocketmq:
         binder:
           name-server: 192.168.31.179:9876
@@ -23,4 +22,9 @@ spring:
             producer:
               group: solution_request_producer
               sync: true
+  redis:
+    host: 192.168.31.179
+    port: 6379
+
+
 
