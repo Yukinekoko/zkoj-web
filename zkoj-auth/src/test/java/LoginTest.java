@@ -33,7 +33,7 @@ public class LoginTest {
 
     @Test
     public void passwordEncode() {
-        String password = "zhkuadmin";
+        String password = "084e20fab576b23ce869f9a1780ebd65";
         String encode = passwordEncoder.encode(password);
         System.out.println(encode);
         System.out.println(passwordEncoder.matches(password, encode));

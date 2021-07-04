@@ -11,6 +11,7 @@ import indi.snowmeow.zkoj.auth.model.entity.UmsUser;
 import indi.snowmeow.zkoj.auth.model.entity.UmsUserRoleMapping;
 import indi.snowmeow.zkoj.auth.service.UserService;
 import indi.snowmeow.zkoj.base.common.base.BaseException;
+import indi.snowmeow.zkoj.base.common.enums.ResultCodeEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -69,5 +70,14 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("User Not Exits!");
         }
         return user.getId();
+    }
+
+    @Override
+    public String findName(long id) {
+        UmsUser user = umsUserMapper.selectById(id);
+        if (user == null) {
+            throw new BaseException(ResultCodeEnum.USER_ACCOUNT_NOT_EXIST);
+        }
+        return user.getName();
     }
 }

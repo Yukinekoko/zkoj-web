@@ -35,6 +35,7 @@ public class ZkojTokenEnhancer implements TokenEnhancer {
         UserDetails userDetails = (UserDetails) oAuth2Authentication.getPrincipal();
         long id = userService.getIdFromUsername(userDetails.getUsername());
         content.put("uid", id);
+        content.put("name", userService.findName(id));
         ((DefaultOAuth2AccessToken) oAuth2AccessToken).setAdditionalInformation(content);
         return oAuth2AccessToken;
     }

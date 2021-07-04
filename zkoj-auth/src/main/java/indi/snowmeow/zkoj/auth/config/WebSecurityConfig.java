@@ -31,12 +31,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .and().csrf().disable();
     }
 
-    /* 设置userDetailService以及加密器 */
+/*    *//* 设置userDetailService以及加密器 *//*
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
 
-    }
+    }*/
 
     /* 设置authenticationManagerBean */
     @Bean(BeanIds.AUTHENTICATION_MANAGER)

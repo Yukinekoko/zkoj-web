@@ -12,6 +12,11 @@
     <artifactId>zkoj-auth</artifactId>
 
     <dependencies>
+        <!-- 切面 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
         <!-- common -->
         <dependency>
             <groupId>indi.snowmeow</groupId>

@@ -1,5 +1,6 @@
 package indi.snowmeow.zkoj.auth.config;
 
+import indi.snowmeow.zkoj.auth.security.CustomWebResponseExceptionTranslator;
 import indi.snowmeow.zkoj.auth.security.ZkojTokenEnhancer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -7,12 +8,15 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
-import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.error.WebResponseExceptionTranslator;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.TokenStore;
@@ -31,10 +35,12 @@ import java.util.Arrays;
 @EnableAuthorizationServer
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
 
-  @Autowired
+    @Autowired
     AuthenticationManager authenticationManager;
     @Autowired
     PasswordEncoder passwordEncoder;
+    @Autowired
+    UserDetailsService userDetailsService;
 
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
@@ -44,6 +50,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 Arrays.asList(tokenEnhancer(), jwtAccessTokenConverter()));
 
         endpoints.tokenStore(jwtTokenStore())
+                .exceptionTranslator(webResponseExceptionTranslator())
                 .authenticationManager(authenticationManager)
                 .tokenEnhancer(tokenEnhancerChain)
                 .allowedTokenEndpointRequestMethods(HttpMethod.POST)
@@ -58,6 +65,15 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .secret(passwordEncoder.encode("zkoj"))
                 .authorizedGrantTypes("password")
                 .scopes("public");
+    }
+
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+        //authenticationProvider.setHideUserNotFoundExceptions(false);
+        authenticationProvider.setUserDetailsService(userDetailsService);
+        authenticationProvider.setPasswordEncoder(passwordEncoder);
+        return authenticationProvider;
     }
 
     /* 注入使用jwtStore */
@@ -87,5 +103,9 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Bean
     protected TokenEnhancer tokenEnhancer() {
         return new ZkojTokenEnhancer();
+    }
+
+    protected WebResponseExceptionTranslator<OAuth2Exception> webResponseExceptionTranslator() {
+        return new CustomWebResponseExceptionTranslator();
     }
 }
